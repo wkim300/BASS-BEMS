@@ -13,13 +13,13 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QTableWidget" name="tableWidget">
+  <widget class="QTableWidget" name="modbustable">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>180</y>
+     <y>230</y>
      <width>511</width>
-     <height>451</height>
+     <height>401</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -35,38 +35,21 @@
     <bool>true</bool>
    </property>
    <property name="rowCount">
-    <number>9</number>
+    <number>0</number>
    </property>
-   <row>
-    <property name="text">
-     <string>1</string>
-    </property>
-   </row>
-   <row>
-    <property name="text">
-     <string>2</string>
-    </property>
-   </row>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
    <column>
     <property name="text">
-     <string>aaa</string>
+     <string>Address</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>aa</string>
+     <string>Modbus Address</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>cc</string>
+     <string>Value</string>
     </property>
    </column>
   </widget>
@@ -236,6 +219,37 @@
      <number>502</number>
     </property>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="pollbtn">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>511</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>조회</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="statuslabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>161</y>
+     <width>511</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
   </widget>
  </widget>
  <resources/>
