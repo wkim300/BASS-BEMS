@@ -225,12 +225,12 @@
     <rect>
      <x>10</x>
      <y>190</y>
-     <width>511</width>
+     <width>251</width>
      <height>30</height>
     </rect>
    </property>
    <property name="text">
-    <string>조회</string>
+    <string>조회시작</string>
    </property>
   </widget>
   <widget class="QLabel" name="statuslabel">
@@ -249,6 +249,19 @@
    </property>
    <property name="text">
     <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pollstopbtn">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>190</y>
+     <width>251</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>조회중단</string>
    </property>
   </widget>
  </widget>
