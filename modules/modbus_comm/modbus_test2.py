@@ -24,7 +24,10 @@ import copy
 import json
 import csv
 
-form_class = uic.loadUiType("C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_test.ui")[0]
+try : 
+    form_class = uic.loadUiType("C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_test.ui")[0]
+except : 
+    form_class = uic.loadUiType("modbus_test.ui")[0]
 
 
 class WindowClass(QMainWindow, form_class) :
@@ -38,6 +41,8 @@ class WindowClass(QMainWindow, form_class) :
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
 
+        self.fncode = 40001
+
         self.input_startaddr.valueChanged.connect(self.input_startaddrFn)
         self.input_endaddr.valueChanged.connect(self.input_endaddrFn)
 
@@ -45,15 +50,26 @@ class WindowClass(QMainWindow, form_class) :
         self.disconnectbtn.clicked.connect(self.disconnectbtnFn)
         self.pollbtn.clicked.connect(self.pollbtnFn)
         self.pollstopbtn.clicked.connect(self.pollstopbtnFn)
+        self.input_fncode.currentIndexChanged.connect(self.input_fncodeFn)
 
         self.swjTableSignal.connect(self.modbustable.setItem)
 
+    def input_fncodeFn(self) : 
+        '''awefawef'''
+        print(self.input_fncode.currentIndex())
+        self.fncode = 40001-(10000*self.input_fncode.currentIndex())
+        print(self.fncode)
+        self.addr_start_label.setText(str(self.input_startaddr.value()+self.fncode))
+        self.input_endaddr.setRange(self.input_startaddr.value(),9999)
+        self.addr_end_label.setText(str(self.input_endaddr.value()+self.fncode))
+        
+    
     def input_startaddrFn(self) : 
-        self.addr_start_label.setText(str(self.input_startaddr.value()+40001))
+        self.addr_start_label.setText(str(self.input_startaddr.value()+self.fncode))
         self.input_endaddr.setRange(self.input_startaddr.value(),9999)
     
     def input_endaddrFn(self) : 
-        self.addr_end_label.setText(str(self.input_endaddr.value()+40001))
+        self.addr_end_label.setText(str(self.input_endaddr.value()+self.fncode))
 
     def connectbtnFn(self) : 
         ipaddress = self.input_ip.text()
@@ -78,7 +94,7 @@ class WindowClass(QMainWindow, form_class) :
         table_rownum = 0
         for addrlist in range(startaddr, endaddr+1) : 
             item_addr = QTableWidgetItem(str(addrlist))
-            item_modbusaddr = QTableWidgetItem(str(addrlist+40001))
+            item_modbusaddr = QTableWidgetItem(str(addrlist+self.fncode))
 
             self.modbustable.setItem(table_rownum,0,item_addr)
             self.modbustable.setItem(table_rownum,1,item_modbusaddr)
@@ -109,7 +125,11 @@ class WindowClass(QMainWindow, form_class) :
                 holdingRegisters_list=[]
 
                 for addrlist in range(startaddr, endaddr+1) : 
-                    holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
+                    
+                    if self.fncode == 40001 : 
+                        holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
+                    else : 
+                        holdingRegisters = self.modbusclient.read_inputregisters(addrlist,1)
                     holdingRegisters_list.append(holdingRegisters[0])
                     print("Register " + str(addrlist) + " poll.")
                 print(holdingRegisters_list)
