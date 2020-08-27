@@ -38,6 +38,12 @@ class WindowClass(QMainWindow, form_class) :
         super().__init__()
         self.setupUi(self)
 
+        self.swjpixmap = QPixmap()
+        self.swjpixmap.load('modbushub.png')
+        self.swjpixmap = self.swjpixmap.scaledToWidth(532)
+
+        self.logolabel.setPixmap(self.swjpixmap)
+
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
 
