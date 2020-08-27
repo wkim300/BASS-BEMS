@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>533</width>
-    <height>645</height>
+    <height>762</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -277,6 +277,19 @@
    </property>
    <property name="text">
     <string>조회중단</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="logolabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>640</y>
+     <width>541</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>mhlogo</string>
    </property>
   </widget>
  </widget>
