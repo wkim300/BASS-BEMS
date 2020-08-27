@@ -41,7 +41,8 @@ class WindowClass(QMainWindow, form_class) :
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
 
-        self.fncode = 40001
+        self.fncodeList = ['00001', '10001', '40001', '30001']
+        self.fncode = '00001'
 
         self.input_startaddr.valueChanged.connect(self.input_startaddrFn)
         self.input_endaddr.valueChanged.connect(self.input_endaddrFn)
@@ -57,19 +58,23 @@ class WindowClass(QMainWindow, form_class) :
     def input_fncodeFn(self) : 
         '''awefawef'''
         print(self.input_fncode.currentIndex())
-        self.fncode = 40001-(10000*self.input_fncode.currentIndex())
+        # self.fncode = 40001-(10000*self.input_fncode.currentIndex())
+        self.fncode = int(self.fncodeList[self.input_fncode.currentIndex()])
+
+
+
         print(self.fncode)
-        self.addr_start_label.setText(str(self.input_startaddr.value()+self.fncode))
+        self.addr_start_label.setText('%05d' % (self.input_startaddr.value()+self.fncode))
         self.input_endaddr.setRange(self.input_startaddr.value(),9999)
-        self.addr_end_label.setText(str(self.input_endaddr.value()+self.fncode))
+        self.addr_end_label.setText('%05d'% (self.input_endaddr.value()+self.fncode))
         
     
     def input_startaddrFn(self) : 
-        self.addr_start_label.setText(str(self.input_startaddr.value()+self.fncode))
+        self.addr_start_label.setText('%05d' % (self.input_startaddr.value()+self.fncode))
         self.input_endaddr.setRange(self.input_startaddr.value(),9999)
     
     def input_endaddrFn(self) : 
-        self.addr_end_label.setText(str(self.input_endaddr.value()+self.fncode))
+        self.addr_end_label.setText('%05d'% (self.input_endaddr.value()+self.fncode))
 
     def connectbtnFn(self) : 
         ipaddress = self.input_ip.text()
@@ -126,6 +131,8 @@ class WindowClass(QMainWindow, form_class) :
 
                 for addrlist in range(startaddr, endaddr+1) : 
                     
+                    
+
                     if self.fncode == 40001 : 
                         holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
                     else : 

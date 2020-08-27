@@ -1,1 +1,3 @@
 modules/modbus_comm/modbus_test.py
+modules/modbus_comm/settings.json
+modules/modbus_comm/.modbus_comm/settings.json

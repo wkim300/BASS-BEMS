@@ -90,6 +90,16 @@
    </property>
    <item>
     <property name="text">
+     <string>0x01 - Coil Status (00001~ )</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>0x02 - Discrete Inputs (10001~ )</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
      <string>0x03 - Holding Registers (40001~ )</string>
     </property>
    </item>
@@ -167,7 +177,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>40001</string>
+    <string>00001</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -183,7 +193,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>40001</string>
+    <string>00001</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
