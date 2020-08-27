@@ -99,10 +99,6 @@ class WindowClass(QMainWindow, form_class) :
             print('polling start')
             self.table_poll_rownum = 0
 
-
-
-
-
             for addrlist in range(startaddr, endaddr+1) : 
                 holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
                 self.item_holdingRegistsers = QTableWidgetItem(str(holdingRegisters[0]))
