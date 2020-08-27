@@ -40,10 +40,11 @@ class WindowClass(QMainWindow, form_class) :
 
         self.swjpixmap = QPixmap()
         
-        try : 
-            self.swjpixmap.load('C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbushub.png')
-        except : 
-            self.swjpixmap.load('modbushub.png')
+        # try : 
+        #     self.swjpixmap.load('C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbushub.png')
+        # except : 
+        #     self.swjpixmap.load('modbushub.png')
+        self.swjpixmap.load('modbushub.png')
         
         self.swjpixmap = self.swjpixmap.scaledToWidth(534)
 
