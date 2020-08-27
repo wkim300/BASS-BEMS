@@ -10,6 +10,7 @@ from PyQt5 import uic
 from PyQt5.QtGui import *
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QThread
 
 import time
 import datetime
@@ -110,43 +111,28 @@ class WindowClass(QMainWindow, form_class) :
                 for addrlist in range(startaddr, endaddr+1) : 
                     holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
                     holdingRegisters_list.append(holdingRegisters[0])
-
+                    print("Register " + str(addrlist) + " poll.")
                 print(holdingRegisters_list)
-                table_poll_rownum = 0
-
+                
+                items_list = []
                 for registersData in holdingRegisters_list :
-                    # widgetName = 'swjTableWidgetItem'+str(registersData)
-                    # locals()[widgetName] = QTableWidgetItem
-                    # item_holdingRegistsers = locals()[widgetName](str(registersData))
-                    item_holdingRegisters = QTableWidgetItem(str(registersData))
-                    print(item_holdingRegisters)
+                    item_holdingRegisters = QTableWidgetItem()
+                    item_holdingRegisters.setText(str(registersData))
+                    items_list.append(item_holdingRegisters)
                     
-                    try : 
-                        self.swjTableSignal.emit(table_poll_rownum, 2, item_holdingRegisters)                       
-                    except: 
-                        pass
+
+                for item_num in range(0,len(items_list)) :
+                    self.swjTableSignal.emit(item_num, 2, items_list[item_num])
                     
-                    table_poll_rownum = table_poll_rownum +0.1
-                    time.sleep(0.1)
                 
             time.sleep(1)
         
-        
-
     # def emit_table(self) : 
     #     self.modbustable.setItem(self.table_poll_rownum,2,self.item_holdingRegistsers)
-        
-
     
     def pollstopbtnFn(self) : 
         self.swjk = 2
         print(str(self.swjk))
-
-
-# app = QApplication(sys.argv)
-# myWindow = WindowClass()
-# myWindow.show()
-# app.exec_()
 
 if __name__ == "__main__" :
     app = QApplication(sys.argv)
