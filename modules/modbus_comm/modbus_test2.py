@@ -55,6 +55,10 @@ class WindowClass(QMainWindow, form_class) :
 
         self.swjTableSignal.connect(self.modbustable.setItem)
 
+        self.disconnectbtn.setEnabled(False)
+        self.pollbtn.setEnabled(False)
+        self.pollstopbtn.setEnabled(False)
+
     def input_fncodeFn(self) : 
         '''awefawef'''
         print(self.input_fncode.currentIndex())
@@ -82,11 +86,19 @@ class WindowClass(QMainWindow, form_class) :
         self.modbusclient = ModbusClient(ipaddress, portnum)
         self.modbusclient.connect()
         self.statuslabel.setText(ipaddress + ":" + str(portnum) + " Modbus TCP Connected")
+        
+        self.disconnectbtn.setEnabled(True)
+        self.connectbtn.setEnabled(False)
+        self.pollbtn.setEnabled(True)
     
     def disconnectbtnFn(self) : 
         '''awefawef'''
         self.modbusclient.close()
         self.statuslabel.setText("Disonnected")
+
+        self.connectbtn.setEnabled(True)
+        self.disconnectbtn.setEnabled(False)
+        self.pollbtn.setEnabled(False)
 
     def pollbtnFn(self) : 
         '''awefawfe'''
@@ -109,7 +121,14 @@ class WindowClass(QMainWindow, form_class) :
         self.swjk = 0
         threadPoll = threading.Thread(target = self.thread_poll, args=([]))
         threadPoll.start()
+        
+        self.connectbtn.setEnabled(False)
+        self.disconnectbtn.setEnabled(False)
+        self.pollstopbtn.setEnabled(True)
+        self.pollbtn.setEnabled(False)
+
         self.statuslabel.setText("Now Polling")
+
         
     
     def thread_poll(self) : 
@@ -131,13 +150,24 @@ class WindowClass(QMainWindow, form_class) :
 
                 for addrlist in range(startaddr, endaddr+1) : 
                     
-                    
+                    try : 
+                        if self.fncode == 1 : 
+                            holdingRegisters = self.modbusclient.read_coils(addrlist,1)
+                        
+                        elif self.fncode == 10001 : 
+                            holdingRegisters = self.modbusclient.read_discreteinputs(addrlist,1)
 
-                    if self.fncode == 40001 : 
-                        holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
-                    else : 
-                        holdingRegisters = self.modbusclient.read_inputregisters(addrlist,1)
-                    holdingRegisters_list.append(holdingRegisters[0])
+                        elif self.fncode == 40001 : 
+                            holdingRegisters = self.modbusclient.read_holdingregisters(addrlist,1)
+
+                        elif self.fncode == 30001 : 
+                            holdingRegisters = self.modbusclient.read_inputregisters(addrlist,1)
+                        holdingRegisters_list.append(holdingRegisters[0])
+                    except AttributeError : 
+                        print('Register Addr Over')
+                        holdingRegisters_list.append('None')
+
+                    
                     print("Register " + str(addrlist) + " poll.")
                 print(holdingRegisters_list)
                 
@@ -160,6 +190,10 @@ class WindowClass(QMainWindow, form_class) :
     def pollstopbtnFn(self) : 
         self.swjk = 2
         print(str(self.swjk))
+
+        self.pollbtn.setEnabled(True)
+        self.disconnectbtn.setEnabled(True)
+        self.pollstopbtn.setEnabled(False)
 
 if __name__ == "__main__" :
     app = QApplication(sys.argv)
