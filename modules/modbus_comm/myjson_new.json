@@ -1,0 +1,54 @@
+[
+    {
+        "equipinfo": {
+            "eid": "1",
+            "name": "swjcom",
+            "addr": "127.0.0.1",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": 1,
+                "tname": "tag1",
+                "fnCode": "03",
+                "mbaddr": "40001"
+            },
+            {
+                "tid": "2",
+                "tname": "tag2",
+                "fnCode": "03",
+                "mbaddr": "40003"
+            },
+            {
+                "tid": "3",
+                "tname": "tag3",
+                "fnCode": "03",
+                "mbaddr": "40004"
+            },
+            {
+                "tid": "4",
+                "tname": "tag4",
+                "fnCode": "03",
+                "mbaddr": "40005"
+            },
+            {
+                "tid": "5",
+                "tname": "tag5",
+                "fnCode": "03",
+                "mbaddr": "40010"
+            },
+            {
+                "tid": "6",
+                "tname": "tag6",
+                "fnCode": "04",
+                "mbaddr": "30002"
+            },
+            {
+                "tid": "7",
+                "tname": "tag7",
+                "fnCode": "04",
+                "mbaddr": "30009"
+            }
+        ]
+    }
+]
