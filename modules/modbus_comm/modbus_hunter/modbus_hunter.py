@@ -61,40 +61,39 @@ class WindowClass(QMainWindow, form_class) :
 
     
     def open_btnFn(self) : 
-        json_fid = QFileDialog.getOpenFileName(self, "Select JSON", "", "JSON (*.JSON)")
-        with open(json_fid[0], "r") as myjson : 
-            self.equipdata = json.load(myjson)
         
-        rowCounts = sum(list([len(self.equipdata[swji]["tags"]) for swji in range(0,len(self.equipdata))]))
-        self.modbustable.setRowCount(rowCounts+1)
+        try : 
+            json_fid = QFileDialog.getOpenFileName(self, "Select JSON", "", "JSON (*.JSON)")
+            with open(json_fid[0], "r") as myjson : 
+                self.equipdata = json.load(myjson)
 
-        ed = self.equipdata
-        table_rownum = 0
-        for equipcnt in range(0,len(self.equipdata)) : 
-            '''awefawef'''
-            tagSize = len(self.equipdata[equipcnt]["tags"])
-            for tagcnt in range(0,tagSize) : 
+            rowCounts = sum(list([len(self.equipdata[swji]["tags"]) for swji in range(0,len(self.equipdata))]))
+            self.modbustable.setRowCount(rowCounts+1)
+
+            ed = self.equipdata
+            table_rownum = 0
+            for equipcnt in range(0,len(self.equipdata)) : 
                 '''awefawef'''
-                item_equipname = QTableWidgetItem(ed[equipcnt]["equipinfo"]["name"])
-                item_equipaddr = QTableWidgetItem(ed[equipcnt]["equipinfo"]["addr"])
-                item_tagname = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["tname"])
-                item_tagid = QTableWidgetItem(str(ed[equipcnt]["tags"][tagcnt]["tid"]))
-                item_mbaddr = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["mbaddr"])
-
-                list_infoitems = [item_equipname, item_equipaddr, item_tagname, item_tagid, item_mbaddr]
-                for table_info_cols in range(0,len(list_infoitems)) : 
+                tagSize = len(self.equipdata[equipcnt]["tags"])
+                for tagcnt in range(0,tagSize) : 
                     '''awefawef'''
-                    self.modbustable.setItem(table_rownum, table_info_cols, list_infoitems[table_info_cols])
-                table_rownum = table_rownum+1
+                    item_equipname = QTableWidgetItem(ed[equipcnt]["equipinfo"]["name"])
+                    item_equipaddr = QTableWidgetItem(ed[equipcnt]["equipinfo"]["addr"])
+                    item_tagname = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["tname"])
+                    item_tagid = QTableWidgetItem(str(ed[equipcnt]["tags"][tagcnt]["tid"]))
+                    item_mbaddr = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["mbaddr"])
 
+                    list_infoitems = [item_equipname, item_equipaddr, item_tagname, item_tagid, item_mbaddr]
+                    for table_info_cols in range(0,len(list_infoitems)) : 
+                        '''awefawef'''
+                        self.modbustable.setItem(table_rownum, table_info_cols, list_infoitems[table_info_cols])
+                    table_rownum = table_rownum+1
             
-        
-        # pp(self.equipdata)
-        self.pollbtn.setEnabled(True)
-    
-    def disconnectbtnFn(self) : 
-        self.modbusclient.close()
-        
+            # pp(self.equipdata)
+            self.pollbtn.setEnabled(True)
+
+        except FileNotFoundError : 
+            pass
 
     def pollbtnFn(self) : 
         self.swjk = 0
@@ -102,11 +101,13 @@ class WindowClass(QMainWindow, form_class) :
         threadPoll.start()
 
         self.pollstopbtn.setEnabled(True)
-        self.pollbtn.setEnabled(True)
+        self.pollbtn.setEnabled(False)
         
     def thread_poll(self) : 
         
+
         fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
+        
         ed = self.equipdata
         while self.swjk < 10 : 
              
@@ -127,7 +128,18 @@ class WindowClass(QMainWindow, form_class) :
                     equip_port = int(ed[equipcnt]["equipinfo"]["port"])
                     
                     self.modbusclient = ModbusClient(equip_ip, equip_port)
-                    self.modbusclient.connect()
+                    
+                    try : 
+                        self.modbusclient.connect()
+                    except socket.timeout : 
+                        pass
+
+                    pollFnDict = {
+                            "01" : self.modbusclient.read_coils,
+                            "02" : self.modbusclient.read_discreteinputs,
+                            "03" : self.modbusclient.read_holdingregisters,
+                            "04" : self.modbusclient.read_inputregisters
+                        }
                     
                     for tagcnt in range(0,tagsize) : 
                         '''awefawef'''
@@ -136,19 +148,23 @@ class WindowClass(QMainWindow, form_class) :
                         mbaddr = current_tag_dict["mbaddr"]
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
-                        if fncode == "01" :
-                            holdingRegisters = self.modbusclient.read_coils(registerAddr,1)
-                        elif fncode == "02" : 
-                            holdingRegisters = self.modbusclient.read_discreteinputs(registerAddr,1)
-                        elif fncode == "03" : 
-                            holdingRegisters = self.modbusclient.read_holdingregisters(registerAddr,1)
-                        elif fncode == "04" : 
-                            holdingRegisters = self.modbusclient.read_inputregisters(registerAddr,1)
+                        # holdingRegisters = pollFnDict[fncode](registerAddr,1)
+
+                        try : 
+                            holdingRegisters = pollFnDict[fncode](registerAddr,1)
+                        except Exception : 
+                            holdingRegisters = [0]
+                        
+
                         
                         holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
-                    self.modbusclient.close()
+                    try : 
+                        self.modbusclient.close()
+                    except : 
+                        pass
+
                 print(holdingRegisters_list)
                 
                 items_list = []

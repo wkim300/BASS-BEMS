@@ -1,0 +1,94 @@
+[
+    {
+        "equipinfo": {
+            "eid": "1",
+            "name": "swjgram",
+            "addr": "192.168.0.138",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "hr1",
+                "fnCode": "03",
+                "mbaddr": "40001"
+            },
+            {
+                "tid": "2",
+                "tname": "hr2",
+                "fnCode": "03",
+                "mbaddr": "40003"
+            },
+            {
+                "tid": "3",
+                "tname": "hr3",
+                "fnCode": "03",
+                "mbaddr": "40007"
+            },
+            {
+                "tid": "4",
+                "tname": "hr4",
+                "fnCode": "03",
+                "mbaddr": "40009"
+            },
+            {
+                "tid": "5",
+                "tname": "hr5",
+                "fnCode": "03",
+                "mbaddr": "40010"
+            },
+            {
+                "tid": "6",
+                "tname": "ir1",
+                "fnCode": "04",
+                "mbaddr": "30002"
+            },
+            {
+                "tid": "7",
+                "tname": "ir2",
+                "fnCode": "04",
+                "mbaddr": "30003"
+            },
+            {
+                "tid": "8",
+                "tname": "ir3",
+                "fnCode": "04",
+                "mbaddr": "30008"
+            }
+        ]
+    },
+    {
+        "equipinfo": {
+            "eid": "2",
+            "name": "swjdesktop",
+            "addr": "127.0.0.1",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "dt1",
+                "fnCode": "03",
+                "mbaddr": "40001"
+            },
+            {
+                "tid": "2",
+                "tname": "dt2",
+                "fnCode": "04",
+                "mbaddr": "30001"
+            },
+            {
+                "tid": "3",
+                "tname": "dt3",
+                "fnCode": "04",
+                "mbaddr": "30010"
+            },
+            {
+                "tid": "4",
+                "tname": "dt4",
+                "fnCode": "03",
+                "mbaddr": "40009"
+            }
+        ]
+    }
+]
