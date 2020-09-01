@@ -153,7 +153,7 @@ class WindowClass(QMainWindow, form_class) :
                         try : 
                             holdingRegisters = pollFnDict[fncode](registerAddr,1)
                         except Exception : 
-                            holdingRegisters = [0]
+                            holdingRegisters = [-1]
                         
 
                         
