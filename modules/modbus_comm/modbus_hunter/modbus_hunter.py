@@ -154,7 +154,7 @@ class WindowClass(QMainWindow, form_class) :
                 items_list = []
                 for registersData in holdingRegisters_list :
                     item_holdingRegisters = QTableWidgetItem()
-                    item_holdingRegisters.setText(str(registersData))
+                    item_holdingRegisters.setText(str(registersData)) 
                     items_list.append(item_holdingRegisters)
                     
 
