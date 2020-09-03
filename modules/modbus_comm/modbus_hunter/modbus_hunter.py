@@ -56,6 +56,7 @@ class WindowClass(QMainWindow, form_class) :
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('종료')
         exitAction.triggered.connect(qApp.quit)
+        
 
         openAction = QAction('Open TAGs', self)
         openAction.setShortcut('Ctrl+O')
@@ -129,38 +130,69 @@ class WindowClass(QMainWindow, form_class) :
         }
         
         ed = self.equipdata
+
+        ## Open sockets for equip lists
+        for equipcnt in range(0,len(ed)) : 
+            equip_ip = ed[equipcnt]["equipinfo"]["addr"]
+            equip_port = int(ed[equipcnt]["equipinfo"]["port"])
+            socketName = 'sock' + str(equipcnt)
+
+            try : 
+                locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                locals()[socketName].settimeout(1)
+                locals()[socketName].connect((equip_ip, equip_port))
+                locals()[socketName].settimeout(None)
+            
+            except (ConnectionRefusedError, TimeoutError, socket.timeout) :
+                locals()[socketName].close()
+                self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+        
+        ### 얘가 while 밖에 있어서, 한번 Socket err 발생한 주소는 항상 closed임 --> 접속 끊겼던 equip 접속 재시도하도록 처리해야됨
+
+        
+        ## Polling Loop Start
         while self.swjk < 10 : 
-             
+
             if self.swjk > 1 : 
+                
+                for equipcnt in range(0,len(ed)) : 
+                    equip_ip = ed[equipcnt]["equipinfo"]["addr"]
+                    equip_port = int(ed[equipcnt]["equipinfo"]["port"])
+
+                    try : 
+                        sock.close()
+                    except :
+                        pass
+                
                 print('break ok')
                 break
             
             else : 
             
-                print('polling start')
-                
+                print('polling start')                
                 holdingRegisters_list=[]
-
+                
                 for equipcnt in range(0,len(ed)) : 
                     
+                    socketName2 = 'sock' + str(equipcnt)
                     tagsize = len(ed[equipcnt]["tags"])
-                    equip_ip = ed[equipcnt]["equipinfo"]["addr"]
-                    equip_port = int(ed[equipcnt]["equipinfo"]["port"])
+                    # equip_ip = ed[equipcnt]["equipinfo"]["addr"]
+                    # equip_port = int(ed[equipcnt]["equipinfo"]["port"])
                     
-                    try : 
-                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        sock.settimeout(1)
-                        sock.connect((equip_ip, equip_port))
-                        # sock.settimeout(None)
-                    except ConnectionRefusedError : 
-                        sock.close()
-                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-                    except TimeoutError : 
-                        sock.close()
-                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-                    except socket.timeout : 
-                        sock.close()
-                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+                    # try : 
+                    #     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    #     sock.settimeout(1)
+                    #     sock.connect((equip_ip, equip_port))
+                    #     # sock.settimeout(None)
+                    # except ConnectionRefusedError : 
+                    #     sock.close()
+                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+                    # except TimeoutError : 
+                    #     sock.close()
+                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+                    # except socket.timeout : 
+                    #     sock.close()
+                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
 
                     for tagcnt in range(0,tagsize) : 
                         '''awefawef'''
@@ -171,17 +203,17 @@ class WindowClass(QMainWindow, form_class) :
 
                         try : 
                             msg_adu = pollFnDict[fncode](1,registerAddr,1)
-                            holdingRegisters = tcp.send_message(msg_adu, sock)
+                            holdingRegisters = tcp.send_message(msg_adu, locals()[socketName2])
                         except Exception : 
                             holdingRegisters = [-1]
                         
                         holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
-                    try : 
-                        sock.close()
-                    except : 
-                        pass
+                    # try : 
+                    #     sock.close()
+                    # except : 
+                    #     pass
 
                 print(holdingRegisters_list)
                 
@@ -194,7 +226,7 @@ class WindowClass(QMainWindow, form_class) :
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])
 
-            time.sleep(0.1)
+            time.sleep(0.5)
         
     def pollstopbtnFn(self) : 
         self.swjk = 2
