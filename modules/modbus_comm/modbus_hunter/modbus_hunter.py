@@ -1,6 +1,3 @@
-from easymodbus.modbusClient import ModbusClient
-from easymodbus.modbusClient import *
-
 from umodbus import conf
 from umodbus.client import tcp
 
@@ -152,14 +149,17 @@ class WindowClass(QMainWindow, form_class) :
                     
                     try : 
                         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        # sock.settimeout(1)
+                        sock.settimeout(1)
                         sock.connect((equip_ip, equip_port))
                         # sock.settimeout(None)
                     except ConnectionRefusedError : 
+                        sock.close()
                         self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
                     except TimeoutError : 
+                        sock.close()
                         self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
                     except socket.timeout : 
+                        sock.close()
                         self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
 
                     for tagcnt in range(0,tagsize) : 
@@ -194,7 +194,7 @@ class WindowClass(QMainWindow, form_class) :
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])
 
-            time.sleep(1)
+            time.sleep(0.1)
         
     def pollstopbtnFn(self) : 
         self.swjk = 2
