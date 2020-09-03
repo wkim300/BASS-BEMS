@@ -13,8 +13,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import *
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QMainWindow, QAction, qApp
 from PyQt5.QtCore import QThread
 
 import time
@@ -30,15 +29,7 @@ import json
 import csv
 from pprint import pprint as pp
 
-
-
-# try : 
-#     form_class = uic.loadUiType("modbus_hunter.ui")[0]
-# except : 
-#     form_class = uic.loadUiType("modbus_hunter.ui")[0]
-
 form_class = uic.loadUiType("modbus_hunter.ui")[0]
-
 
 class WindowClass(QMainWindow, form_class) :
 
@@ -47,14 +38,12 @@ class WindowClass(QMainWindow, form_class) :
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
-
+        self.initMenubar()
+        
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
 
-        self.fncodeList = ['00001', '10001', '40001', '30001']
-        self.fncode = '00001'
-        
-        self.open_json.clicked.connect(self.open_btnFn)
+        # self.open_json.clicked.connect(self.open_btnFn)
         self.pollbtn.clicked.connect(self.pollbtnFn)
         self.pollstopbtn.clicked.connect(self.pollstopbtnFn)
         
@@ -62,6 +51,27 @@ class WindowClass(QMainWindow, form_class) :
         
         self.pollbtn.setEnabled(False)
         self.pollstopbtn.setEnabled(False)
+        
+
+    def initMenubar(self) : 
+        '''awefawef'''
+        exitAction = QAction('Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('종료')
+        exitAction.triggered.connect(qApp.quit)
+
+        openAction = QAction('Open TAGs', self)
+        openAction.setShortcut('Ctrl+O')
+        openAction.setStatusTip('TAG List 파일 불러오기')
+        openAction.triggered.connect(self.open_btnFn)
+
+        self.statusBar()
+
+        menubar = self.menuBar()
+        menubar.setNativeMenuBar(False)
+        menuFile = menubar.addMenu('&File')
+        menuFile.addAction(exitAction)
+        menuFile.addAction(openAction)
 
     
     def open_btnFn(self) : 
@@ -140,13 +150,17 @@ class WindowClass(QMainWindow, form_class) :
                     equip_ip = ed[equipcnt]["equipinfo"]["addr"]
                     equip_port = int(ed[equipcnt]["equipinfo"]["port"])
                     
-                    # self.modbusclient = ModbusClient(equip_ip, equip_port)
-                    
                     try : 
                         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        sock.connect((equip_ip, equip_port))    
+                        # sock.settimeout(1)
+                        sock.connect((equip_ip, equip_port))
+                        # sock.settimeout(None)
+                    except ConnectionRefusedError : 
+                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+                    except TimeoutError : 
+                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
                     except socket.timeout : 
-                        pass
+                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
 
                     for tagcnt in range(0,tagsize) : 
                         '''awefawef'''
@@ -155,17 +169,11 @@ class WindowClass(QMainWindow, form_class) :
                         mbaddr = current_tag_dict["mbaddr"]
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
-                        # holdingRegisters = pollFnDict[fncode](registerAddr,1)
-
                         try : 
                             msg_adu = pollFnDict[fncode](1,registerAddr,1)
                             holdingRegisters = tcp.send_message(msg_adu, sock)
-                            
-                            
                         except Exception : 
                             holdingRegisters = [-1]
-                        
-
                         
                         holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
@@ -182,7 +190,6 @@ class WindowClass(QMainWindow, form_class) :
                     item_holdingRegisters = QTableWidgetItem()
                     item_holdingRegisters.setText(str(registersData)) 
                     items_list.append(item_holdingRegisters)
-                    
 
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])

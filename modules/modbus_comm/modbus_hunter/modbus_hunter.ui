@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>742</width>
-    <height>645</height>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
+     <y>110</y>
      <width>721</width>
      <height>501</height>
     </rect>
@@ -72,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>70</y>
      <width>361</width>
      <height>30</height>
     </rect>
@@ -85,9 +85,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>61</y>
+     <y>21</y>
      <width>721</width>
-     <height>21</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -96,33 +96,20 @@
     </font>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>File -&gt; Open TAGs(단축키 : 컨트롤+O) 에서 MODBUS 설정 파일을 먼저 로드하세요.</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pollstopbtn">
    <property name="geometry">
     <rect>
      <x>380</x>
-     <y>90</y>
+     <y>70</y>
      <width>351</width>
      <height>30</height>
     </rect>
    </property>
    <property name="text">
     <string>조회중단</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="open_json">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>721</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>MODBUS 설정 파일 불러오기</string>
    </property>
   </widget>
  </widget>
