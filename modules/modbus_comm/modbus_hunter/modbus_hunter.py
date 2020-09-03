@@ -152,12 +152,14 @@ class WindowClass(QMainWindow, form_class) :
 
                         try : 
                             holdingRegisters = pollFnDict[fncode](registerAddr,1)
+                            
+                            
                         except Exception : 
                             holdingRegisters = [-1]
                         
 
                         
-                        holdingRegisters_list.append(holdingRegisters[0])
+                        holdingRegisters_list.append(hex(holdingRegisters[0]))
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
                     try : 
