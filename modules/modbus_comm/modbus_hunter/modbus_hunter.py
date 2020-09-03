@@ -104,6 +104,8 @@ class WindowClass(QMainWindow, form_class) :
         threadPoll = threading.Thread(target = self.thread_poll, args=([]))
         threadPoll.start()
 
+        self.statuslabel.setText('Now Polling..')
+
         self.pollstopbtn.setEnabled(True)
         self.pollbtn.setEnabled(False)
         
@@ -189,6 +191,9 @@ class WindowClass(QMainWindow, form_class) :
         
     def pollstopbtnFn(self) : 
         self.swjk = 2
+        self.pollstopbtn.setEnabled(False)
+        self.pollbtn.setEnabled(True)
+        self.statuslabel.setText('Polling End')
         
 if __name__ == "__main__" :
     app = QApplication(sys.argv)
