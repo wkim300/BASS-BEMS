@@ -1,5 +1,3 @@
-from easymodbus.modbusClient import ModbusClient
-from easymodbus.modbusClient import *
 from umodbus import conf
 from umodbus.client import tcp
 

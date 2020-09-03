@@ -1,6 +1,10 @@
 from easymodbus.modbusClient import ModbusClient
 from easymodbus.modbusClient import *
 
+from umodbus import conf
+from umodbus.client import tcp
+
+import socket
 import time
 import sys
 import threading
@@ -108,6 +112,13 @@ class WindowClass(QMainWindow, form_class) :
 
         fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
         
+        pollFnDict = {
+            "01" : tcp.read_coils,
+            "02" : tcp.read_discrete_inputs,
+            "03" : tcp.read_holding_registers,
+            "04" : tcp.read_input_registers
+        }
+        
         ed = self.equipdata
         while self.swjk < 10 : 
              
@@ -127,20 +138,14 @@ class WindowClass(QMainWindow, form_class) :
                     equip_ip = ed[equipcnt]["equipinfo"]["addr"]
                     equip_port = int(ed[equipcnt]["equipinfo"]["port"])
                     
-                    self.modbusclient = ModbusClient(equip_ip, equip_port)
+                    # self.modbusclient = ModbusClient(equip_ip, equip_port)
                     
                     try : 
-                        self.modbusclient.connect()
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.connect((equip_ip, equip_port))    
                     except socket.timeout : 
                         pass
 
-                    pollFnDict = {
-                            "01" : self.modbusclient.read_coils,
-                            "02" : self.modbusclient.read_discreteinputs,
-                            "03" : self.modbusclient.read_holdingregisters,
-                            "04" : self.modbusclient.read_inputregisters
-                        }
-                    
                     for tagcnt in range(0,tagsize) : 
                         '''awefawef'''
                         current_tag_dict = ed[equipcnt]["tags"][tagcnt]
@@ -151,7 +156,8 @@ class WindowClass(QMainWindow, form_class) :
                         # holdingRegisters = pollFnDict[fncode](registerAddr,1)
 
                         try : 
-                            holdingRegisters = pollFnDict[fncode](registerAddr,1)
+                            msg_adu = pollFnDict[fncode](1,registerAddr,1)
+                            holdingRegisters = tcp.send_message(msg_adu, sock)
                             
                             
                         except Exception : 
@@ -159,11 +165,11 @@ class WindowClass(QMainWindow, form_class) :
                         
 
                         
-                        holdingRegisters_list.append(hex(holdingRegisters[0]))
+                        holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
                     try : 
-                        self.modbusclient.close()
+                        sock.close()
                     except : 
                         pass
 
@@ -179,7 +185,7 @@ class WindowClass(QMainWindow, form_class) :
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])
 
-            time.sleep(5)
+            time.sleep(1)
         
     def pollstopbtnFn(self) : 
         self.swjk = 2
