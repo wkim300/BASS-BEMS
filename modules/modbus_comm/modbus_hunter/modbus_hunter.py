@@ -169,31 +169,14 @@ class WindowClass(QMainWindow, form_class) :
             
             else : 
             
-                print('polling start')                
+                print('polling start')
                 holdingRegisters_list=[]
                 
                 for equipcnt in range(0,len(ed)) : 
                     
                     socketName2 = 'sock' + str(equipcnt)
                     tagsize = len(ed[equipcnt]["tags"])
-                    # equip_ip = ed[equipcnt]["equipinfo"]["addr"]
-                    # equip_port = int(ed[equipcnt]["equipinfo"]["port"])
                     
-                    # try : 
-                    #     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    #     sock.settimeout(1)
-                    #     sock.connect((equip_ip, equip_port))
-                    #     # sock.settimeout(None)
-                    # except ConnectionRefusedError : 
-                    #     sock.close()
-                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-                    # except TimeoutError : 
-                    #     sock.close()
-                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-                    # except socket.timeout : 
-                    #     sock.close()
-                    #     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-
                     for tagcnt in range(0,tagsize) : 
                         '''awefawef'''
                         current_tag_dict = ed[equipcnt]["tags"][tagcnt]
@@ -210,11 +193,6 @@ class WindowClass(QMainWindow, form_class) :
                         holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
-                    # try : 
-                    #     sock.close()
-                    # except : 
-                    #     pass
-
                 print(holdingRegisters_list)
                 
                 items_list = []

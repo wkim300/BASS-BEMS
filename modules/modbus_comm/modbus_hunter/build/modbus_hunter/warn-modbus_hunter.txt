@@ -18,6 +18,7 @@ missing module named _posixsubprocess - imported by subprocess (optional), multi
 missing module named pwd - imported by posixpath (delayed, conditional), shutil (optional), tarfile (optional), pathlib (delayed, conditional, optional), http.server (delayed, optional), webbrowser (delayed), netrc (delayed, conditional), getpass (delayed), distutils.util (delayed, conditional, optional)
 missing module named posix - imported by os (conditional, optional), shutil (conditional)
 missing module named resource - imported by posix (top-level), test.support (optional)
+missing module named 'multiprocessing.forking' - imported by C:\Users\ECODA\AppData\Local\Programs\Python\Python38\Lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_multiprocessing.py (optional)
 missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional), zipimport (top-level)
 excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional), zipimport (top-level)
 missing module named _posixshmem - imported by multiprocessing.resource_tracker (conditional), multiprocessing.shared_memory (conditional)
