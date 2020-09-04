@@ -182,6 +182,8 @@ class WindowClass(QMainWindow, form_class) :
                 locals()[socketName].settimeout(1)
                 locals()[socketName].connect((equip_ip, equip_port))
                 locals()[socketName].settimeout(None)
+
+                print(locals()[socketName])
             
             except (ConnectionRefusedError, TimeoutError, socket.timeout) :
                 # trySet.add(equipcnt)
