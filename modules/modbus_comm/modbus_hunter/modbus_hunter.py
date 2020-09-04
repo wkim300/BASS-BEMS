@@ -122,9 +122,8 @@ class WindowClass(QMainWindow, form_class) :
 
 
 
-
+    '''
     def trySockets(self, todo=set) : 
-        '''awefawef'''
         tryList = list(todo)
         trySet = todo
         ed = self.equipdata
@@ -151,6 +150,7 @@ class WindowClass(QMainWindow, form_class) :
                     self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
         
         return trySet
+        '''
 
 
 
