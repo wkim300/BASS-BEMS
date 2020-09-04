@@ -107,6 +107,9 @@ class WindowClass(QMainWindow, form_class) :
         except FileNotFoundError : 
             pass
 
+
+
+
     def pollbtnFn(self) : 
         self.swjk = 0
         threadPoll = threading.Thread(target = self.thread_poll, args=([]))
@@ -116,23 +119,60 @@ class WindowClass(QMainWindow, form_class) :
 
         self.pollstopbtn.setEnabled(True)
         self.pollbtn.setEnabled(False)
-        
-    def thread_poll(self) : 
-        
 
-        fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
+
+
+
+    def trySockets(self, todo=set) : 
+        '''awefawef'''
+        tryList = list(todo)
+        trySet = todo
+        ed = self.equipdata
+
+        if not tryList : 
+            pass
         
+        else:
+            for equipcnt in tryList : 
+                equip_ip = ed[equipcnt]["equipinfo"]["addr"]
+                equip_port = int(ed[equipcnt]["equipinfo"]["port"])
+                socketName = 'sock' + str(equipcnt)
+
+                try : 
+                    locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    locals()[socketName].settimeout(1)
+                    locals()[socketName].connect((equip_ip, equip_port))
+                    locals()[socketName].settimeout(None)
+                    trySet.remove(equipcnt)
+                    
+                
+                except (ConnectionRefusedError, TimeoutError, socket.timeout) :
+                    locals()[socketName].close()
+                    self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+        
+        return trySet
+
+
+
+
+
+    def thread_poll(self) : 
+        fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
         pollFnDict = {
             "01" : tcp.read_coils,
             "02" : tcp.read_discrete_inputs,
             "03" : tcp.read_holding_registers,
             "04" : tcp.read_input_registers
         }
-        
+        # trySet = set()
+
         ed = self.equipdata
 
-        ## Open sockets for equip lists
+        ## Open sockets for All equip lists
         for equipcnt in range(0,len(ed)) : 
+            
+            print("Initializing Socket {0}".format(equipcnt))
+
             equip_ip = ed[equipcnt]["equipinfo"]["addr"]
             equip_port = int(ed[equipcnt]["equipinfo"]["port"])
             socketName = 'sock' + str(equipcnt)
@@ -144,30 +184,55 @@ class WindowClass(QMainWindow, form_class) :
                 locals()[socketName].settimeout(None)
             
             except (ConnectionRefusedError, TimeoutError, socket.timeout) :
+                # trySet.add(equipcnt)
                 locals()[socketName].close()
                 self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-        
-        ### 얘가 while 밖에 있어서, 한번 Socket err 발생한 주소는 항상 closed임 --> 접속 끊겼던 equip 접속 재시도하도록 처리해야됨
-
         
         ## Polling Loop Start
         while self.swjk < 10 : 
 
             if self.swjk > 1 : 
                 
+                #### Close All Sockets ###
                 for equipcnt in range(0,len(ed)) : 
                     equip_ip = ed[equipcnt]["equipinfo"]["addr"]
                     equip_port = int(ed[equipcnt]["equipinfo"]["port"])
-
+                    socketNameForClose = 'sock'+str(equipcnt)
+                    
                     try : 
-                        sock.close()
+                        locals()[socketNameForClose].close()
                     except :
                         pass
-                
+                #### Close All Sockets ###
+
                 print('break ok')
                 break
             
             else : 
+
+                # trySet = self.trySockets(trySet)  ### Socket comm. Re-try
+
+                for equipcnt in range(0,len(ed)) : 
+                    
+                    print("Initializing Socket {0}".format(equipcnt))
+
+                    equip_ip = ed[equipcnt]["equipinfo"]["addr"]
+                    equip_port = int(ed[equipcnt]["equipinfo"]["port"])
+                    socketName = 'sock' + str(equipcnt)
+
+                    try : 
+                        locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        locals()[socketName].settimeout(1)
+                        locals()[socketName].connect((equip_ip, equip_port))
+                        locals()[socketName].settimeout(None)
+                    
+                    except (ConnectionRefusedError, TimeoutError, socket.timeout) :
+                        # trySet.add(equipcnt)
+                        locals()[socketName].close()
+                        self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+
+
+                # print('step 2')
             
                 print('polling start')
                 holdingRegisters_list=[]
@@ -178,7 +243,6 @@ class WindowClass(QMainWindow, form_class) :
                     tagsize = len(ed[equipcnt]["tags"])
                     
                     for tagcnt in range(0,tagsize) : 
-                        '''awefawef'''
                         current_tag_dict = ed[equipcnt]["tags"][tagcnt]
                         fncode = current_tag_dict["fnCode"]
                         mbaddr = current_tag_dict["mbaddr"]
@@ -187,9 +251,13 @@ class WindowClass(QMainWindow, form_class) :
                         try : 
                             msg_adu = pollFnDict[fncode](1,registerAddr,1)
                             holdingRegisters = tcp.send_message(msg_adu, locals()[socketName2])
+
                         except Exception : 
-                            holdingRegisters = [-1]
+                            holdingRegisters = [-4111]
+                            # trySet.add(equipcnt)
                         
+                        # print('step3')
+
                         holdingRegisters_list.append(holdingRegisters[0])
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
@@ -200,11 +268,16 @@ class WindowClass(QMainWindow, form_class) :
                     item_holdingRegisters = QTableWidgetItem()
                     item_holdingRegisters.setText(str(registersData)) 
                     items_list.append(item_holdingRegisters)
+                
+                # print('step 4')
 
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])
+                
+                # print('step 5')
 
-            time.sleep(0.5)
+            # print(trySet)
+            time.sleep(1)
         
     def pollstopbtnFn(self) : 
         self.swjk = 2
