@@ -134,16 +134,10 @@ class WindowClass(QMainWindow, form_class) :
         }
         
         ed = self.equipdata
-<<<<<<< HEAD
-        
-        ## Open sockets for All equip lists
-        for equipcnt in range(0,len(ed)) : 
-=======
         trySet = set(range(0,len(ed)))
 
         #### Initial Socket Starts - All Equipments
         for equipcnt in list(trySet) : 
->>>>>>> 9d26a55fcf69ccd39896e4cf638bd2ce3deb88d4
             
             print("Initializing Socket {0}".format(equipcnt))
 
