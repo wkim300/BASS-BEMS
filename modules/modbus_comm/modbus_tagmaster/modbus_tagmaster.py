@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QThread
 
-form_class = uic.loadUiType("treewidgettest.ui")[0]
+form_class = uic.loadUiType("modbus_tagmaster.ui")[0]
 
 class WindowClass(QMainWindow, form_class) :
 
