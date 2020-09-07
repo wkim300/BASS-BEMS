@@ -122,38 +122,6 @@ class WindowClass(QMainWindow, form_class) :
 
 
 
-    '''
-    def trySockets(self, todo=set) : 
-        tryList = list(todo)
-        trySet = todo
-        ed = self.equipdata
-
-        if not tryList : 
-            pass
-        
-        else:
-            for equipcnt in tryList : 
-                equip_ip = ed[equipcnt]["equipinfo"]["addr"]
-                equip_port = int(ed[equipcnt]["equipinfo"]["port"])
-                socketName = 'sock' + str(equipcnt)
-
-                try : 
-                    locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    locals()[socketName].settimeout(1)
-                    locals()[socketName].connect((equip_ip, equip_port))
-                    locals()[socketName].settimeout(None)
-                    trySet.remove(equipcnt)
-                    
-                
-                except (ConnectionRefusedError, TimeoutError, socket.timeout) :
-                    locals()[socketName].close()
-                    self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
-        
-        return trySet
-        '''
-
-
-
 
 
     def thread_poll(self) : 
@@ -164,12 +132,18 @@ class WindowClass(QMainWindow, form_class) :
             "03" : tcp.read_holding_registers,
             "04" : tcp.read_input_registers
         }
-        # trySet = set()
-
+        
         ed = self.equipdata
+<<<<<<< HEAD
         
         ## Open sockets for All equip lists
         for equipcnt in range(0,len(ed)) : 
+=======
+        trySet = set(range(0,len(ed)))
+
+        #### Initial Socket Starts - All Equipments
+        for equipcnt in list(trySet) : 
+>>>>>>> 9d26a55fcf69ccd39896e4cf638bd2ce3deb88d4
             
             print("Initializing Socket {0}".format(equipcnt))
 
@@ -179,9 +153,11 @@ class WindowClass(QMainWindow, form_class) :
 
             try : 
                 locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                locals()[socketName].settimeout(1)
+                locals()[socketName].settimeout(0.5)
                 locals()[socketName].connect((equip_ip, equip_port))
-                locals()[socketName].settimeout(None)
+                locals()[socketName].settimeout(0.1)
+
+                trySet.remove(equipcnt)
 
                 print(locals()[socketName])
             
@@ -212,9 +188,7 @@ class WindowClass(QMainWindow, form_class) :
             
             else : 
 
-                # trySet = self.trySockets(trySet)  ### Socket comm. Re-try
-
-                for equipcnt in range(0,len(ed)) : 
+                for equipcnt in list(trySet) : 
                     
                     print("Initializing Socket {0}".format(equipcnt))
 
@@ -224,13 +198,18 @@ class WindowClass(QMainWindow, form_class) :
 
                     try : 
                         locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        locals()[socketName].settimeout(1)
+                        locals()[socketName].settimeout(0.5)
                         locals()[socketName].connect((equip_ip, equip_port))
-                        locals()[socketName].settimeout(None)
+                        locals()[socketName].settimeout(0.1)
+                        # locals()[socketName].settimeout(None)
+
+                        trySet.remove(equipcnt)
                     
                     except (ConnectionRefusedError, TimeoutError, socket.timeout) :
-                        # trySet.add(equipcnt)
+                        
                         locals()[socketName].close()
+                        trySet.add(equipcnt)
+                        
                         self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
 
 
@@ -242,6 +221,7 @@ class WindowClass(QMainWindow, form_class) :
                 for equipcnt in range(0,len(ed)) : 
                     
                     socketName2 = 'sock' + str(equipcnt)
+                    # locals()[socketName2].settimeout(1)
                     tagsize = len(ed[equipcnt]["tags"])
                     
                     for tagcnt in range(0,tagsize) : 
@@ -251,11 +231,16 @@ class WindowClass(QMainWindow, form_class) :
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
                         try : 
+                            print("Req. Register {0}-{1}".format(equipcnt, tagcnt))
                             msg_adu = pollFnDict[fncode](1,registerAddr,1)
+                            print("Msg {0}-{1} created".format(equipcnt, tagcnt))
                             holdingRegisters = tcp.send_message(msg_adu, locals()[socketName2])
+                            print("Register {0}-{1} get".format(equipcnt, tagcnt))
+                            
 
                         except Exception : 
                             holdingRegisters = [-4111]
+                            trySet.add(equipcnt)
                             # trySet.add(equipcnt)
                         
                         # print('step3')
@@ -265,6 +250,8 @@ class WindowClass(QMainWindow, form_class) :
                     
                 print(holdingRegisters_list)
                 
+
+                ########## Table Item Part #####################
                 items_list = []
                 for registersData in holdingRegisters_list :
                     item_holdingRegisters = QTableWidgetItem()
@@ -275,6 +262,7 @@ class WindowClass(QMainWindow, form_class) :
 
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 5, items_list[item_num])
+                ########## Table Item Part #####################
                 
                 # print('step 5')
 
