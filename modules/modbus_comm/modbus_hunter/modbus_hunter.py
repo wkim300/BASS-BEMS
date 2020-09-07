@@ -167,7 +167,7 @@ class WindowClass(QMainWindow, form_class) :
         # trySet = set()
 
         ed = self.equipdata
-
+        
         ## Open sockets for All equip lists
         for equipcnt in range(0,len(ed)) : 
             
