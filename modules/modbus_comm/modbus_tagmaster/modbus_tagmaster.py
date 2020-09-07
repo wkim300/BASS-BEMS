@@ -103,30 +103,16 @@ class WindowClass(QMainWindow, form_class) :
         self.parentitem = self.item_selec.parent()
 
         self.add_tag.setEnabled(True)
-        
-        # try : 
-        #     print(self.parentitem.data(0,0))
-        # except AttributeError : 
-        #     pass
 
-    # def btn1Fn(self) : 
-    #     item_txt = self.input1.text()
-    #     self.item_selec.addChild(QTreeWidgetItem(self.parentitem, [item_txt,item_txt+'_col2']))
-    #     self.item_selec.setExpanded(True)
-    #     # pp(self.equipdata)
+
+
+
 
     def add_equipFn(self) : 
         eid_list = [0]
         
         ed = copy.deepcopy(self.equipdata) # Init에서 불러온 equipdata를 deepcopy(원본 변수 수정 방지)
 
-        # try : 
-        #     ed = copy.deepcopy(self.equipdata) # Init에서 불러온 equipdata를 deepcopy(원본 변수 수정 방지)
-
-        # except AttributeError : 
-        #     ed = copy.deepcopy(self.empty_equipdata)
-
-        
         for equips in range(0,len(ed)) : 
             # ed = self.equipdata
             eid_list.append(int(ed[equips]["equipinfo"]["eid"])) # Equip ID 추가를 위해 전체 EID 검사 후 리스트화
@@ -148,6 +134,11 @@ class WindowClass(QMainWindow, form_class) :
         self.equipdata = copy.deepcopy(ed)
         # pp(self.equipdata)
         self.fnListSet()
+
+
+
+
+
 
     def add_tagFn(self) : 
         
@@ -190,7 +181,12 @@ class WindowClass(QMainWindow, form_class) :
         
         self.fnListSet()
         self.add_tag.setEnabled(False)
-    
+
+
+
+
+
+
     def btn_saveFn(self) : 
         
         try : 
