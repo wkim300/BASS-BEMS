@@ -7,3 +7,5 @@ modules/modbus_comm/dist/modbus_test2.zip
 modules/modbus_comm/modbus_hunter/.vscode/settings.json
 modules/modbus_comm/modbus_hunter/.vscode/settings.json
 *.bak
+modules/modbus_comm/modbus_tagmaster/.vscode/launch.json
+modules/modbus_comm/modbus_tagmaster/.vscode/settings.json
