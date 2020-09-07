@@ -165,12 +165,15 @@ class WindowClass(QMainWindow, form_class) :
         # print(type(target_equip))
 
         for swji in range(0,len(self.equipdata)) : 
-            '''awefawef'''
+            
             eid = self.equipdata[swji]["equipinfo"]["eid"]
             # print(eid)
+            
             if int(eid) == int(target_equip) : 
                 target_listIndex = swji
                 break
+            else : 
+                target_listIndex = 0
         
         try : 
             new_tid = str(int(self.equipdata[target_listIndex]["tags"][-1]["tid"])+1)
