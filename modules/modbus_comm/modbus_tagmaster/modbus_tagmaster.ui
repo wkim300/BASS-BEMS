@@ -23,10 +23,10 @@
     </rect>
    </property>
    <property name="editTriggers">
-    <set>QAbstractItemView::DoubleClicked</set>
+    <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked</set>
    </property>
    <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectItems</enum>
+    <enum>QAbstractItemView::SelectRows</enum>
    </property>
    <column>
     <property name="text">

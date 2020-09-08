@@ -60,7 +60,15 @@ class WindowClass(QMainWindow, form_class) :
         self.btn_save.clicked.connect(self.btn_saveFn)
         self.btn_load.clicked.connect(self.btn_loadFn)
 
+        self.tree1.itemDoubleClicked.connect(self.treeDblFn)
+
         self.add_tag.setEnabled(False)
+
+    
+    def treeDblFn(self) : 
+        '''awefawef'''
+
+
 
     
     def fnListSet(self) : 
@@ -93,7 +101,10 @@ class WindowClass(QMainWindow, form_class) :
                 tagaddr = current_tag['mbaddr']
 
                 locals()[item_child] = QTreeWidgetItem(locals()[item_parent], [tagname,'{0}-{1}'.format(equipid, tagid), tagfncode, tagaddr])
+                # locals()[item_child].setFlags(locals()[item_child].flags() | Qt.ItemIsEditable)
                 locals()[item_child].setExpanded(True)
+
+
         
         
 
@@ -101,6 +112,9 @@ class WindowClass(QMainWindow, form_class) :
         
         self.item_selec = self.tree1.selectedItems()[0]
         self.parentitem = self.item_selec.parent()
+
+        # print(self.parentitem.data(0,0))
+        print(self.item_selec.data(1,0))
 
         self.add_tag.setEnabled(True)
 
@@ -163,8 +177,6 @@ class WindowClass(QMainWindow, form_class) :
             if int(eid) == int(target_equip) : 
                 target_listIndex = swji
                 break
-            else : 
-                target_listIndex = 0
         
         try : 
             new_tid = str(int(self.equipdata[target_listIndex]["tags"][-1]["tid"])+1)
