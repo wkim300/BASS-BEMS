@@ -114,7 +114,16 @@ class WindowClass(QMainWindow, form_class) :
         self.parentitem = self.item_selec.parent()
 
         # print(self.parentitem.data(0,0))
+        uid = self.item_selec.data(1,0)
+        if uid.find('-') == -1 : 
+            eid = uid
+            tid = None
+        else : 
+            eid = uid[:uid.find('-')]
+            tid = uid[uid.find('-')+1:]
+
         print(self.item_selec.data(1,0))
+        print("Equip id : {0} // Tag id : {1}".format(eid, tid))
 
         self.add_tag.setEnabled(True)
 
