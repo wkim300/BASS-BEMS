@@ -225,21 +225,22 @@ class WindowClass(QMainWindow, form_class) :
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
                         try : 
-                            print("Req. Register {0}-{1}".format(equipcnt, tagcnt))
                             msg_adu = pollFnDict[fncode](1,registerAddr,1)
-                            print("Msg {0}-{1} created".format(equipcnt, tagcnt))
-                            holdingRegisters = tcp.send_message(msg_adu, locals()[socketName2])
-                            print("Register {0}-{1} get".format(equipcnt, tagcnt))
-                            
+                            msg_response = tcp.send_message(msg_adu, locals()[socketName2])
 
+                            holdingRegistersHex = [hex(x) for x in msg_response]
+                            holdingRegistersHexJoined = "0x" + (("".join(holdingRegistersHex[:])).replace("0x",""))
+
+                            holdingRegisters = int(holdingRegistersHexJoined, 16)
+                            
                         except Exception : 
-                            holdingRegisters = [-4111]
+                            holdingRegisters = -4111
                             trySet.add(equipcnt)
                             # trySet.add(equipcnt)
                         
                         # print('step3')
 
-                        holdingRegisters_list.append(holdingRegisters[0])
+                        holdingRegisters_list.append(holdingRegisters)
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
                 print(holdingRegisters_list)

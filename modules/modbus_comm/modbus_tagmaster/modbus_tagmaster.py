@@ -141,7 +141,6 @@ class WindowClass(QMainWindow, form_class) :
                 tagaddr = current_tag['mbaddr']
 
                 locals()[item_child] = QTreeWidgetItem(locals()[item_parent], [tagname,'{0}-{1}'.format(equipid, tagid), tagfncode, tagaddr])
-                # locals()[item_child].setFlags(locals()[item_child].flags() | Qt.ItemIsEditable)
                 locals()[item_child].setExpanded(True)
 
 
