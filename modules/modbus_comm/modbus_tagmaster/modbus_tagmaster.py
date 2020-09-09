@@ -249,6 +249,8 @@ class WindowClass(QMainWindow, form_class) :
         for addrCheck in added_mbaddr : 
             '''aweawef'''
             iscnt = self.addrUsed.count(addrCheck)
+
+        # int32, int16 태그 추가할 때 addr list 체크해서 중복 addr 회피부분 완성해야됨
         
 
 
