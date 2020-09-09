@@ -12,7 +12,8 @@ from PyQt5.QtGui import *
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import Qt
+
 
 form_class = uic.loadUiType("modbus_tagmaster.ui")[0]
 
@@ -24,6 +25,8 @@ class WindowClass(QMainWindow, form_class) :
 
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
+
+        self.input_mbaddr.setInputMask("00000")
 
         # with open('myjson_new.json','r') as myjsonfile : 
         #     self.equipdata = json.load(myjsonfile)
@@ -53,24 +56,61 @@ class WindowClass(QMainWindow, form_class) :
         twHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
         twHeader.setStretchLastSection(False)
 
+        self.tree1.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+        mod_action = QAction("수정", self.tree1)
+        self.tree1.addAction(mod_action)
+        mod_action.triggered.connect(self.modActionFn)
+
+        del_action = QAction("삭제", self.tree1)
+        self.tree1.addAction(del_action)
+        del_action.triggered.connect(self.delActionFn)
+
         self.tree1.itemClicked.connect(self.treeFn)
-        # self.btn1.clicked.connect(self.btn1Fn)
         self.add_equip.clicked.connect(self.add_equipFn)
         self.add_tag.clicked.connect(self.add_tagFn)
         self.btn_save.clicked.connect(self.btn_saveFn)
         self.btn_load.clicked.connect(self.btn_loadFn)
 
-        self.tree1.itemDoubleClicked.connect(self.treeDblFn)
-
         self.add_tag.setEnabled(False)
 
-    
-    def treeDblFn(self) : 
-        '''awefawef'''
+    def modActionFn(self) : 
+        
+        try : 
+            self.item_selec = self.tree1.selectedItems()[0]
+            self.parentitem = self.item_selec.parent()
+
+            uid = self.item_selec.data(1,0)
+            if uid.find('-') == -1 : 
+                eid = uid
+                tid = None
+            else : 
+                eid = uid[:uid.find('-')]
+                tid = uid[uid.find('-')+1:]
+
+            print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+        except IndexError : 
+            pass
+
+    def delActionFn(self) : 
+        
+        try : 
+            self.item_selec = self.tree1.selectedItems()[0]
+            self.parentitem = self.item_selec.parent()
+
+            uid = self.item_selec.data(1,0)
+            if uid.find('-') == -1 : 
+                eid = uid
+                tid = None
+            else : 
+                eid = uid[:uid.find('-')]
+                tid = uid[uid.find('-')+1:]
+
+            print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+        except IndexError : 
+            pass
 
 
-
-    
     def fnListSet(self) : 
         
         self.tree1.clear()
@@ -110,20 +150,20 @@ class WindowClass(QMainWindow, form_class) :
 
     def treeFn(self) : 
         
-        self.item_selec = self.tree1.selectedItems()[0]
-        self.parentitem = self.item_selec.parent()
+        # self.item_selec = self.tree1.selectedItems()[0]
+        # self.parentitem = self.item_selec.parent()
 
-        # print(self.parentitem.data(0,0))
-        uid = self.item_selec.data(1,0)
-        if uid.find('-') == -1 : 
-            eid = uid
-            tid = None
-        else : 
-            eid = uid[:uid.find('-')]
-            tid = uid[uid.find('-')+1:]
+        # # print(self.parentitem.data(0,0))
+        # uid = self.item_selec.data(1,0)
+        # if uid.find('-') == -1 : 
+        #     eid = uid
+        #     tid = None
+        # else : 
+        #     eid = uid[:uid.find('-')]
+        #     tid = uid[uid.find('-')+1:]
 
-        print(self.item_selec.data(1,0))
-        print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+        # # print(self.item_selec.data(1,0))
+        # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
 
         self.add_tag.setEnabled(True)
 
