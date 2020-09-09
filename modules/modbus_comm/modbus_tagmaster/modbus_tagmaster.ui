@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
+    <width>601</width>
     <height>604</height>
    </rect>
   </property>
@@ -41,6 +41,11 @@
    <column>
     <property name="text">
      <string>Function Code</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Type</string>
     </property>
    </column>
    <column>
@@ -191,6 +196,9 @@
    <property name="text">
     <string>40001</string>
    </property>
+   <property name="clearButtonEnabled">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
@@ -230,6 +238,39 @@
    <property name="text">
     <string>오브젝트 리스트 불러오기</string>
    </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>520</y>
+     <width>56</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Type :</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cb_type">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>520</y>
+     <width>76</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>UINT16</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>UINT32</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <tabstops>

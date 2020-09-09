@@ -31,6 +31,7 @@ class WindowClass(QMainWindow, form_class) :
         # with open('myjson_new.json','r') as myjsonfile : 
         #     self.equipdata = json.load(myjsonfile)
         self.equipdata=[]
+        self.addrUsed=[]
         self.empty_equipdata = [
             {
             "equipinfo": {
@@ -44,7 +45,8 @@ class WindowClass(QMainWindow, form_class) :
                     "tid" : "",
                     "tname" : "",
                     "fnCode" : "",
-                    "mbaddr" : ""
+                    "mbaddr" : "",
+                    "ttype" : ""
                 }
             ]
             }
@@ -89,11 +91,14 @@ class WindowClass(QMainWindow, form_class) :
                 tid = uid[uid.find('-')+1:]
 
             print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+            
         except IndexError : 
             pass
 
     def delActionFn(self) : 
         
+        ed = copy.deepcopy(self.equipdata)
+
         try : 
             self.item_selec = self.tree1.selectedItems()[0]
             self.parentitem = self.item_selec.parent()
@@ -105,8 +110,24 @@ class WindowClass(QMainWindow, form_class) :
             else : 
                 eid = uid[:uid.find('-')]
                 tid = uid[uid.find('-')+1:]
+                
+                for eidcnt in range(0,len(ed)) : 
+                    
+                    for tidcnt in range(0,len(ed[eidcnt]['tags'])) :
+                        
+                        print("{}-{}".format(eidcnt, tidcnt))
+                        print("tID : " + ed[eidcnt]['tags'][tidcnt]['tid'])
 
+                        current_tid = ed[eidcnt]['tags'][tidcnt]['tid']
+                        if current_tid == tid : 
+                            del ed[eidcnt]['tags'][tidcnt]
+                            break
+
+            self.equipdata = copy.deepcopy(ed)
+            self.fnListSet()
+            self.add_tag.setEnabled(False)
             print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+        
         except IndexError : 
             pass
 
@@ -138,14 +159,11 @@ class WindowClass(QMainWindow, form_class) :
                 tagid = current_tag['tid']
                 tagname = current_tag['tname']
                 tagfncode = current_tag['fnCode']
+                tagtype = current_tag['ttype']
                 tagaddr = current_tag['mbaddr']
 
-                locals()[item_child] = QTreeWidgetItem(locals()[item_parent], [tagname,'{0}-{1}'.format(equipid, tagid), tagfncode, tagaddr])
+                locals()[item_child] = QTreeWidgetItem(locals()[item_parent], [tagname,'{0}-{1}'.format(equipid, tagid), tagfncode, tagtype, tagaddr])
                 locals()[item_child].setExpanded(True)
-
-
-        
-        
 
     def treeFn(self) : 
         
@@ -196,6 +214,7 @@ class WindowClass(QMainWindow, form_class) :
         self.equipdata = copy.deepcopy(ed)
         # pp(self.equipdata)
         self.fnListSet()
+        
 
 
 
@@ -206,39 +225,43 @@ class WindowClass(QMainWindow, form_class) :
         
         self.item_selec = self.tree1.selectedItems()[0]
         self.parentitem = self.item_selec.parent()
+        fncode_list = {"4" : "03", "3" : "04", "0" : "01", "1" : "02"}
 
         if self.parentitem == None : 
-            # print(self.item_selec.data(1,0))
             target_equip = self.item_selec.data(1,0)
         else : 
-            # print(self.parentitem.data(1,0))
             target_equip = self.parentitem.data(1,0)
 
-        # print(target_equip)
-        # print(type(target_equip))
-
         for swji in range(0,len(self.equipdata)) : 
-            
             eid = self.equipdata[swji]["equipinfo"]["eid"]
-            # print(eid)
             
             if int(eid) == int(target_equip) : 
                 target_listIndex = swji
                 break
         
+        new_mbaddr = self.input_mbaddr.text()
+        new_ttype = self.cb_type.currentText()
+        if new_ttype == "UINT32" : 
+            added_mbaddr = [new_mbaddr, str(int(new_mbaddr)+1)]
+        else: 
+            added_mbaddr = [new_mbaddr]
+
+        for addrCheck in added_mbaddr : 
+            '''aweawef'''
+            iscnt = self.addrUsed.count(addrCheck)
+        
+
+
         try : 
             new_tid = str(int(self.equipdata[target_listIndex]["tags"][-1]["tid"])+1)
         except IndexError : 
             new_tid = str(1)
-        
         new_tname = self.input_tagname.text()
-        new_mbaddr = self.input_mbaddr.text()
-        fncode_list = {"4" : "03", "3" : "04", "0" : "01", "1" : "02"}
         new_fncode = fncode_list[new_mbaddr[0]]
-        self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr})
-
-        # pp(self.equipdata)
+        self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr, "ttype":new_ttype})
+        self.addrUsed += added_mbaddr
         
+        print(self.addrUsed)
         self.fnListSet()
         self.add_tag.setEnabled(False)
 
@@ -251,10 +274,9 @@ class WindowClass(QMainWindow, form_class) :
         
         try : 
             file_ed_save = QFileDialog.getSaveFileName(self, "Save file", "", "JSON (*.json)")
-
-            
             with open(file_ed_save[0], 'w') as myjson_new : 
                 json.dump(self.equipdata, myjson_new, indent=4)
+        
         except FileNotFoundError : 
             pass
 
