@@ -94,8 +94,9 @@ class WindowClass(QMainWindow, form_class) :
                     item_tagname = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["tname"])
                     item_tagid = QTableWidgetItem(str(ed[equipcnt]["tags"][tagcnt]["tid"]))
                     item_mbaddr = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["mbaddr"])
+                    item_ttype = QTableWidgetItem(ed[equipcnt]["tags"][tagcnt]["ttype"])
 
-                    list_infoitems = [item_equipname, item_equipaddr, item_tagname, item_tagid, item_mbaddr]
+                    list_infoitems = [item_equipname, item_equipaddr, item_tagname, item_tagid, item_ttype, item_mbaddr]
                     for table_info_cols in range(0,len(list_infoitems)) : 
                         '''awefawef'''
                         self.modbustable.setItem(table_rownum, table_info_cols, list_infoitems[table_info_cols])
@@ -222,10 +223,12 @@ class WindowClass(QMainWindow, form_class) :
                         current_tag_dict = ed[equipcnt]["tags"][tagcnt]
                         fncode = current_tag_dict["fnCode"]
                         mbaddr = current_tag_dict["mbaddr"]
+                        ttype = current_tag_dict["ttype"]
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
                         try : 
-                            msg_adu = pollFnDict[fncode](1,registerAddr,1)
+                            regLength = 1 if ttype=="UINT16" else 2
+                            msg_adu = pollFnDict[fncode](1, registerAddr, regLength)
                             msg_response = tcp.send_message(msg_adu, locals()[socketName2])
 
                             holdingRegistersHex = [hex(x) for x in msg_response]
@@ -256,7 +259,7 @@ class WindowClass(QMainWindow, form_class) :
                 # print('step 4')
 
                 for item_num in range(0,len(items_list)) :
-                    self.swjTableSignal.emit(item_num, 5, items_list[item_num])
+                    self.swjTableSignal.emit(item_num, 6, items_list[item_num])
                 ########## Table Item Part #####################
                 
                 # print('step 5')
