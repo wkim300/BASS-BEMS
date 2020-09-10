@@ -123,7 +123,10 @@ class WindowClass(QMainWindow, form_class) :
 
 
 
-
+    ##################################################################################################################
+    ############# Register 조회시 각 Register당 16진수 4자리 고정해야 함
+    ############# Big endian일 때 1+0 => 0x0001 + 0x0000 ==> 0x00010000 이렇게 되어야 함
+    ##################################################################################################################
 
     def thread_poll(self) : 
         fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
@@ -231,8 +234,10 @@ class WindowClass(QMainWindow, form_class) :
                             msg_adu = pollFnDict[fncode](1, registerAddr, regLength)
                             msg_response = tcp.send_message(msg_adu, locals()[socketName2])
 
-                            holdingRegistersHex = [hex(x) for x in msg_response]
+                            holdingRegistersHex = ["{0:04x}".format(x) for x in msg_response]
+                            print(holdingRegistersHex)
                             holdingRegistersHexJoined = "0x" + (("".join(holdingRegistersHex[:])).replace("0x",""))
+                            print(holdingRegistersHexJoined)
 
                             holdingRegisters = int(holdingRegistersHexJoined, 16)
                             
