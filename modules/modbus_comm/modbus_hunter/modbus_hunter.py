@@ -1,6 +1,9 @@
 from umodbus import conf
 from umodbus.client import tcp
 
+import bitstring
+from bitstring import BitArray
+
 import socket
 import time
 import sys
@@ -17,14 +20,20 @@ import time
 import datetime
 from datetime import timedelta
 
-import urllib
-from urllib.request import urlopen
-from urllib.parse import urlencode, unquote, quote_plus
-
 import copy
 import json
 import csv
 from pprint import pprint as pp
+
+'''
+import bitstring
+from bitstring import BitArray
+
+awef = BitArray('0x0000ffff')
+aaa = awef.uint
+'''
+
+
 
 form_class = uic.loadUiType("modbus_hunter.ui")[0]
 
@@ -36,6 +45,13 @@ class WindowClass(QMainWindow, form_class) :
         super().__init__()
         self.setupUi(self)
         self.initMenubar()
+
+        self.pollFnDict = {
+            "01" : tcp.read_coils,
+            "02" : tcp.read_discrete_inputs,
+            "03" : tcp.read_holding_registers,
+            "04" : tcp.read_input_registers
+        }
         
         swjwidth = self.frameGeometry().width()
         swjheight = self.frameGeometry().height()
@@ -122,25 +138,15 @@ class WindowClass(QMainWindow, form_class) :
         self.pollbtn.setEnabled(False)
 
 
-
-    ##################################################################################################################
-    ############# Register 조회시 각 Register당 16진수 4자리 고정해야 함
-    ############# Big endian일 때 1+0 => 0x0001 + 0x0000 ==> 0x00010000 이렇게 되어야 함
-    ##################################################################################################################
-
+    ##### MODBUS Polling Thread 함수 
     def thread_poll(self) : 
         fnList = {"01":"00001", "02":"10001", "03":"40001", "04":"30001"}
-        pollFnDict = {
-            "01" : tcp.read_coils,
-            "02" : tcp.read_discrete_inputs,
-            "03" : tcp.read_holding_registers,
-            "04" : tcp.read_input_registers
-        }
-        
+                
         ed = self.equipdata
-        trySet = set(range(0,len(ed)))
+        trySet = set(range(0,len(ed))) # 일단은 접속 시도 대상 리스트 trySet에 모든 Equipment를 추가
 
-        #### Initial Socket Starts - All Equipments
+        ### Initial Socket Starts - All Equipments
+        ### 여기서 일단 Tag list의 모든 Equipment에 대해 Socket통신을 열고 접속 시도
         for equipcnt in list(trySet) : 
             
             print("Initializing Socket {0}".format(equipcnt))
@@ -149,27 +155,28 @@ class WindowClass(QMainWindow, form_class) :
             equip_port = int(ed[equipcnt]["equipinfo"]["port"])
             socketName = 'sock' + str(equipcnt)
 
+            # Equip list의 Equip에 대해 소켓 접속 시도
             try : 
                 locals()[socketName] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 locals()[socketName].settimeout(0.5)
                 locals()[socketName].connect((equip_ip, equip_port))
                 locals()[socketName].settimeout(0.1)
 
-                trySet.remove(equipcnt)
+                trySet.remove(equipcnt) # 소켓 연결 성공한 Equipment는 Try set에서 삭제
 
                 print(locals()[socketName])
             
             except (ConnectionRefusedError, TimeoutError, socket.timeout) :
-                # trySet.add(equipcnt)
-                locals()[socketName].close()
+                
+                locals()[socketName].close() # 접속불가 대상 소켓은 일단 close하여 winsock 점유 포트를 반납하여 낭비를 방지함
                 self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
         
-        ## Polling Loop Start
+        ### Polling Loop Start
         while self.swjk < 10 : 
 
             if self.swjk > 1 : 
                 
-                #### Close All Sockets ###
+                #### 접송종료버튼을 누르면 모든 equipment의 소켓을 close하고 polling loop를 탈출
                 for equipcnt in range(0,len(ed)) : 
                     equip_ip = ed[equipcnt]["equipinfo"]["addr"]
                     equip_port = int(ed[equipcnt]["equipinfo"]["port"])
@@ -179,13 +186,14 @@ class WindowClass(QMainWindow, form_class) :
                         locals()[socketNameForClose].close()
                     except :
                         pass
-                #### Close All Sockets ###
-
+                
                 print('break ok')
                 break
             
             else : 
 
+                ### Try set에 대한 socket comm. 재시도 부분
+                ### 기존에 접속되어있는 소켓에 대해서는 socket open을 중복 실행하지 않기 위함(winsock 포트 낭비 방지)
                 for equipcnt in list(trySet) : 
                     
                     print("Initializing Socket {0}".format(equipcnt))
@@ -209,17 +217,15 @@ class WindowClass(QMainWindow, form_class) :
                         trySet.add(equipcnt)
                         
                         self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
+                ### socket open 재시도부분 끝
 
-
-                # print('step 2')
-            
                 print('polling start')
                 holdingRegisters_list=[]
                 
+                ### 접속되어있는 각 equipment의 socket에 대해 modbus register 조회 부분 시작
                 for equipcnt in range(0,len(ed)) : 
                     
                     socketName2 = 'sock' + str(equipcnt)
-                    # locals()[socketName2].settimeout(1)
                     tagsize = len(ed[equipcnt]["tags"])
                     
                     for tagcnt in range(0,tagsize) : 
@@ -230,24 +236,28 @@ class WindowClass(QMainWindow, form_class) :
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
                         try : 
-                            regLength = 1 if ttype=="UINT16" else 2
-                            msg_adu = pollFnDict[fncode](1, registerAddr, regLength)
-                            msg_response = tcp.send_message(msg_adu, locals()[socketName2])
+                            regLength = 1 if ttype=="UINT16" else 2 # 태그 타입에 따라 modbus register 조회 길이 결정
+                            msg_adu = self.pollFnDict[fncode](1, registerAddr, regLength) # MODBUS message ADU 생성
+                            msg_response = tcp.send_message(msg_adu, locals()[socketName2]) # MODBUS ADU 전송, response PDU 저장
 
-                            holdingRegistersHex = ["{0:04x}".format(x) for x in msg_response]
+                            holdingRegistersHex = ["{0:04x}".format(x) for x in msg_response] # "0x0000" 형식으로 각 register의 값을 HEX로 저장
                             print(holdingRegistersHex)
-                            holdingRegistersHexJoined = "0x" + (("".join(holdingRegistersHex[:])).replace("0x",""))
+                            holdingRegistersHexJoined = "0x" + (("".join(holdingRegistersHex[:])).replace("0x","")) # 조회한 HEX를 하나의 HEX로 이어붙임
                             print(holdingRegistersHexJoined)
 
-                            holdingRegisters = int(holdingRegistersHexJoined, 16)
+                            holdingRegisters = int(holdingRegistersHexJoined, 16) # 연결된 Register값(HEX)을 INT로 변환
+                            '''
+                            ####################################################################################
+                            ################## Signed INT와 Float에도 대응할 수 있도록 Joined HEX 값 변환 기능 추가해야함
+                            아마도 BitArray 활용
+                            또는 struct pack/unpack 활용
+                            ####################################################################################
+                            '''
                             
                         except Exception : 
-                            holdingRegisters = -4111
-                            trySet.add(equipcnt)
-                            # trySet.add(equipcnt)
-                        
-                        # print('step3')
-
+                            holdingRegisters = -4111 # 접속 끊긴 기기의 TAG값은 -4111로 임의 지정
+                            trySet.add(equipcnt)  # 접속 끊긴 Equipment를 Try set에 추가하여 socket comm. 재시도 목록에 추가
+                            
                         holdingRegisters_list.append(holdingRegisters)
                         print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
                     
@@ -261,15 +271,10 @@ class WindowClass(QMainWindow, form_class) :
                     item_holdingRegisters.setText(str(registersData)) 
                     items_list.append(item_holdingRegisters)
                 
-                # print('step 4')
-
                 for item_num in range(0,len(items_list)) :
                     self.swjTableSignal.emit(item_num, 6, items_list[item_num])
                 ########## Table Item Part #####################
                 
-                # print('step 5')
-
-            # print(trySet)
             time.sleep(1)
         
     def pollstopbtnFn(self) : 
