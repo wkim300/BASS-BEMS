@@ -97,6 +97,8 @@ class WindowClass(QMainWindow, form_class) :
 
     def delActionFn(self) : 
         
+        ### 태그 삭제시 self.addrUsed 업데이트 여기에도 추가
+        ###########################################################################################################
         ed = copy.deepcopy(self.equipdata)
 
         try : 
