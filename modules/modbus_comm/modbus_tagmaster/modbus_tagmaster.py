@@ -90,7 +90,7 @@ class WindowClass(QMainWindow, form_class) :
                 eid = uid[:uid.find('-')]
                 tid = uid[uid.find('-')+1:]
 
-            print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+            # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
             
         except IndexError : 
             pass
@@ -115,8 +115,8 @@ class WindowClass(QMainWindow, form_class) :
                     
                     for tidcnt in range(0,len(ed[eidcnt]['tags'])) :
                         
-                        print("{}-{}".format(eidcnt, tidcnt))
-                        print("tID : " + ed[eidcnt]['tags'][tidcnt]['tid'])
+                        # print("{}-{}".format(eidcnt, tidcnt))
+                        # print("tID : " + ed[eidcnt]['tags'][tidcnt]['tid'])
 
                         current_tid = ed[eidcnt]['tags'][tidcnt]['tid']
                         if current_tid == tid : 
@@ -126,7 +126,7 @@ class WindowClass(QMainWindow, form_class) :
             self.equipdata = copy.deepcopy(ed)
             self.fnListSet()
             self.add_tag.setEnabled(False)
-            print("Equip id : {0} // Tag id : {1}".format(eid, tid))
+            # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
         
         except IndexError : 
             pass
@@ -165,26 +165,10 @@ class WindowClass(QMainWindow, form_class) :
                 locals()[item_child] = QTreeWidgetItem(locals()[item_parent], [tagname,'{0}-{1}'.format(equipid, tagid), tagfncode, tagtype, tagaddr])
                 locals()[item_child].setExpanded(True)
 
+
+
     def treeFn(self) : 
-        
-        # self.item_selec = self.tree1.selectedItems()[0]
-        # self.parentitem = self.item_selec.parent()
-
-        # # print(self.parentitem.data(0,0))
-        # uid = self.item_selec.data(1,0)
-        # if uid.find('-') == -1 : 
-        #     eid = uid
-        #     tid = None
-        # else : 
-        #     eid = uid[:uid.find('-')]
-        #     tid = uid[uid.find('-')+1:]
-
-        # # print(self.item_selec.data(1,0))
-        # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
-
         self.add_tag.setEnabled(True)
-
-
 
 
 

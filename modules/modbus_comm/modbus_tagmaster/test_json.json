@@ -20,6 +20,27 @@
                 "fnCode": "03",
                 "mbaddr": "40002",
                 "ttype": "UINT32"
+            },
+            {
+                "tid": "3",
+                "tname": "tag4",
+                "fnCode": "03",
+                "mbaddr": "40004",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "4",
+                "tname": "tag33",
+                "fnCode": "03",
+                "mbaddr": "40006",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "5",
+                "tname": "tag55",
+                "fnCode": "03",
+                "mbaddr": "40008",
+                "ttype": "UINT16"
             }
         ]
     }
