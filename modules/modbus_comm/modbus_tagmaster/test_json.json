@@ -12,14 +12,14 @@
                 "tname": "tag1",
                 "fnCode": "03",
                 "mbaddr": "40001",
-                "ttype": "INT16"
+                "ttype": "UINT16"
             },
             {
                 "tid": "2",
                 "tname": "tag2",
                 "fnCode": "03",
                 "mbaddr": "40002",
-                "ttype": "INT32"
+                "ttype": "UINT32"
             }
         ]
     }

@@ -214,10 +214,6 @@ class WindowClass(QMainWindow, form_class) :
         self.equipdata = copy.deepcopy(ed)
         # pp(self.equipdata)
         self.fnListSet()
-        
-
-
-
 
 
 
@@ -240,7 +236,7 @@ class WindowClass(QMainWindow, form_class) :
                 target_listIndex = swji
                 break
         
-        new_mbaddr = self.input_mbaddr.text()
+        new_mbaddr = "{0:05d}".format(int(self.input_mbaddr.text()))
         new_ttype = self.cb_type.currentText()
         new_tname = self.input_tagname.text()
         new_fncode = fncode_list[new_mbaddr[0]]
@@ -259,23 +255,32 @@ class WindowClass(QMainWindow, form_class) :
         else: 
             added_mbaddr = [new_mbaddr]
 
+        addrDuplicated = []
         for addrCheck in added_mbaddr : 
-            iscnt = self.addrUsed.count(addrCheck)
-
-
-        ### equipdata dictionary에 입력받은 TAG 정보 추가        
-        self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr, "ttype":new_ttype})
-        
-        ### 사용된 modbus address 집계 리스트에 현재 추가된 address를 추가함
-        self.addrUsed += added_mbaddr
+            
+            if addrCheck in self.addrUsed : 
+                addrDuplicated.append(addrCheck)
         
         
-        print(self.addrUsed)
-        self.fnListSet() # tree widget display 업데이트
-        self.add_tag.setEnabled(False) # TAG추가버튼은 일단 비활성화하도록
-
-
-
+        
+        if len(addrDuplicated) != 0 : 
+        
+            informMsg = "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어\n추가할 수 없습니다.\n\n § 중복된 주소 : {0}".format(addrDuplicated[0])
+            # QMessageBox.information(self,"알림", "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어 추가할 수 없습니다.")
+            QMessageBox.information(self,"알림", informMsg)
+        
+        else : 
+            
+            ### equipdata dictionary에 입력받은 TAG 정보 추가        
+            self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr, "ttype":new_ttype})
+            
+            ### 사용된 modbus address 집계 리스트에 현재 추가된 address를 추가함
+            self.addrUsed += added_mbaddr
+            
+            
+            print(self.addrUsed)
+            self.fnListSet() # tree widget display 업데이트
+            self.add_tag.setEnabled(False) # TAG추가버튼은 일단 비활성화하도록
 
 
 
@@ -289,6 +294,8 @@ class WindowClass(QMainWindow, form_class) :
         except FileNotFoundError : 
             pass
 
+
+
     def btn_loadFn(self) : 
         
         try : 
@@ -297,7 +304,19 @@ class WindowClass(QMainWindow, form_class) :
             with open(file_ed[0],'r') as myjsonfile : 
                 self.equipdata = json.load(myjsonfile)
 
+            ed = self.equipdata
+            for equipcnt in range(0, len(ed)) : 
+                for tagcnt in range(0, len(ed[equipcnt]["tags"])) : 
+                    current_tag = ed[equipcnt]["tags"][tagcnt]
+
+                    if current_tag["ttype"] == "UINT16" :
+                        self.addrUsed.append(current_tag["mbaddr"])
+                    else : 
+                        self.addrUsed.append(current_tag["mbaddr"])
+                        self.addrUsed.append(str(int(current_tag["mbaddr"])+1))
+
             self.fnListSet()
+        
         except : 
             pass
 
