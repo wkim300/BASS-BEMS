@@ -1,0 +1,33 @@
+[
+    {
+        "equipinfo": {
+            "eid": "1",
+            "name": "mb1",
+            "addr": "127.0.0.1",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "6",
+                "tname": "t6",
+                "fnCode": "03",
+                "mbaddr": "40009",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "7",
+                "tname": "t1",
+                "fnCode": "03",
+                "mbaddr": "40001",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "8",
+                "tname": "t2",
+                "fnCode": "03",
+                "mbaddr": "40003",
+                "ttype": "UINT16"
+            }
+        ]
+    }
+]

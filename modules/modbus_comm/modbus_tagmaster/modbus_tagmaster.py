@@ -122,9 +122,26 @@ class WindowClass(QMainWindow, form_class) :
 
                         current_tid = ed[eidcnt]['tags'][tidcnt]['tid']
                         if current_tid == tid : 
-                            del ed[eidcnt]['tags'][tidcnt]
+                            
+                            current_mbaddr = ed[eidcnt]['tags'][tidcnt]['mbaddr']
+                            current_ttype = ed[eidcnt]['tags'][tidcnt]['ttype']
+                            
+                            mbaddr_list_toDel = [current_mbaddr] if current_ttype == "UINT16" else [current_mbaddr, str(int(current_mbaddr)+1)] # 삭제되는 태그의 modbus address 정리
+                            
+                            del ed[eidcnt]['tags'][tidcnt] # equipment data dictionary에서 대상 tag 삭제
+                            
+                            # used address 리스트에서 삭제대상 modbus address 함께 삭제
+                            print(mbaddr_list_toDel)
+                            for mbaddr_target in mbaddr_list_toDel : 
+                                
+                                # try : 
+                                self.addrUsed.remove(mbaddr_target)
+                                # except ValueError : 
+                                #     pass
+
                             break
 
+            print(self.addrUsed)
             self.equipdata = copy.deepcopy(ed)
             self.fnListSet()
             self.add_tag.setEnabled(False)
@@ -235,7 +252,6 @@ class WindowClass(QMainWindow, form_class) :
 
         
         ### TAG TYPE에 따라 사용된 modbus address 범위를 집계하고 기존 address와 중복일 경우 추가하지 않도록 하는 부분
-        ##### int32, int16 태그 추가할 때 addr list 체크해서 중복 addr 회피부분 완성해야됨
         if new_ttype == "UINT32" : 
             added_mbaddr = [new_mbaddr, str(int(new_mbaddr)+1)]
         else: 
