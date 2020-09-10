@@ -262,7 +262,7 @@ class WindowClass(QMainWindow, form_class) :
                 addrDuplicated.append(addrCheck)
         
         
-        
+        ### 중복이 있으면 알림메세지, 없으면 태그 추가
         if len(addrDuplicated) != 0 : 
         
             informMsg = "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어\n추가할 수 없습니다.\n\n § 중복된 주소 : {0}".format(addrDuplicated[0])
