@@ -227,6 +227,7 @@ class WindowClass(QMainWindow, form_class) :
         self.parentitem = self.item_selec.parent()
         fncode_list = {"4" : "03", "3" : "04", "0" : "01", "1" : "02"}
 
+        ### tree widget에서 선택한 item의 parent 잡기
         if self.parentitem == None : 
             target_equip = self.item_selec.data(1,0)
         else : 
@@ -241,31 +242,37 @@ class WindowClass(QMainWindow, form_class) :
         
         new_mbaddr = self.input_mbaddr.text()
         new_ttype = self.cb_type.currentText()
+        new_tname = self.input_tagname.text()
+        new_fncode = fncode_list[new_mbaddr[0]]
+        
+        ### 새로 추가되는 TAG의 tid는 마지막 TAG의 tid에서 +1이 되도록 설정
+        try : 
+            new_tid = str(int(self.equipdata[target_listIndex]["tags"][-1]["tid"])+1)
+        except IndexError : 
+            new_tid = str(1)
+
+        
+        ### TAG TYPE에 따라 사용된 modbus address 범위를 집계하고 기존 address와 중복일 경우 추가하지 않도록 하는 부분
+        ##### int32, int16 태그 추가할 때 addr list 체크해서 중복 addr 회피부분 완성해야됨
         if new_ttype == "UINT32" : 
             added_mbaddr = [new_mbaddr, str(int(new_mbaddr)+1)]
         else: 
             added_mbaddr = [new_mbaddr]
 
         for addrCheck in added_mbaddr : 
-            '''aweawef'''
             iscnt = self.addrUsed.count(addrCheck)
 
-        # int32, int16 태그 추가할 때 addr list 체크해서 중복 addr 회피부분 완성해야됨
-        
 
-
-        try : 
-            new_tid = str(int(self.equipdata[target_listIndex]["tags"][-1]["tid"])+1)
-        except IndexError : 
-            new_tid = str(1)
-        new_tname = self.input_tagname.text()
-        new_fncode = fncode_list[new_mbaddr[0]]
+        ### equipdata dictionary에 입력받은 TAG 정보 추가        
         self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr, "ttype":new_ttype})
+        
+        ### 사용된 modbus address 집계 리스트에 현재 추가된 address를 추가함
         self.addrUsed += added_mbaddr
         
+        
         print(self.addrUsed)
-        self.fnListSet()
-        self.add_tag.setEnabled(False)
+        self.fnListSet() # tree widget display 업데이트
+        self.add_tag.setEnabled(False) # TAG추가버튼은 일단 비활성화하도록
 
 
 
