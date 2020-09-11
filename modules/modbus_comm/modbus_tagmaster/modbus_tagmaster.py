@@ -31,7 +31,7 @@ class WindowClass(QMainWindow, form_class) :
         # with open('myjson_new.json','r') as myjsonfile : 
         #     self.equipdata = json.load(myjsonfile)
         self.equipdata=[]
-        self.addrUsed=[]
+        self.addrUsed={}
         self.empty_equipdata = [
             {
             "equipinfo": {
@@ -106,6 +106,7 @@ class WindowClass(QMainWindow, form_class) :
             self.parentitem = self.item_selec.parent()
 
             uid = self.item_selec.data(1,0)
+
             if uid.find('-') == -1 : 
                 eid = uid
                 tid = None
@@ -115,13 +116,14 @@ class WindowClass(QMainWindow, form_class) :
                 
                 for eidcnt in range(0,len(ed)) : 
                     
+                    current_eid = ed[eidcnt]['equipinfo']['eid']
                     for tidcnt in range(0,len(ed[eidcnt]['tags'])) :
                         
                         # print("{}-{}".format(eidcnt, tidcnt))
                         # print("tID : " + ed[eidcnt]['tags'][tidcnt]['tid'])
 
                         current_tid = ed[eidcnt]['tags'][tidcnt]['tid']
-                        if current_tid == tid : 
+                        if (current_tid == tid)&(current_eid == eid) : 
                             
                             current_mbaddr = ed[eidcnt]['tags'][tidcnt]['mbaddr']
                             current_ttype = ed[eidcnt]['tags'][tidcnt]['ttype']
@@ -307,21 +309,38 @@ class WindowClass(QMainWindow, form_class) :
                 self.equipdata = json.load(myjsonfile)
 
             ed = self.equipdata
+            
             for equipcnt in range(0, len(ed)) : 
+                current_eid = ed[equipcnt]["equipinfo"]["eid"]
+
+                addr_used_thisEquip = []
                 for tagcnt in range(0, len(ed[equipcnt]["tags"])) : 
                     current_tag = ed[equipcnt]["tags"][tagcnt]
 
-                    if current_tag["ttype"] == "UINT16" :
-                        self.addrUsed.append(current_tag["mbaddr"])
+                    if current_tag["ttype"][-2:] == "16" :
+                        addr_used_thisEquip.append(current_tag["mbaddr"])
+                        # self.addrUsed[current_eid].append(current_tag["mbaddr"])
+                        # self.addrUsed[current_eid] = [mbaddr for mbaddr in [current_tag["mbaddr"]]]
                     else : 
-                        self.addrUsed.append(current_tag["mbaddr"])
-                        self.addrUsed.append(str(int(current_tag["mbaddr"])+1))
+                        addr_used_thisEquip.append(current_tag["mbaddr"])
+                        addr_used_thisEquip.append(str(int(current_tag["mbaddr"])+1))
+                        # self.addrUsed[current_eid] = [mbaddr for mbaddr in [current_tag["mbaddr"], str(int(current_tag["mbaddr"])+1)]]
 
+                self.addrUsed[current_eid] = addr_used_thisEquip
             self.fnListSet()
+            print(self.addrUsed)
         
         except : 
             pass
+'''
 
+###############################################
+tag 삭제시 self.addrUsed 딕셔너리에 반영하도록 del Fn 수정 필요
+현재 self.addrUsed => 리스트임
+dict에 반영되도록 수정
+###############################################
+
+'''
 
 
 

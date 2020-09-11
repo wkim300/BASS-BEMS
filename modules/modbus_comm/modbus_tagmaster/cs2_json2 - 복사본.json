@@ -1,0 +1,142 @@
+[
+    {
+        "equipinfo": {
+            "eid": "1",
+            "name": "CS2",
+            "addr": "10.71.66.192",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "f1",
+                "fnCode": "04",
+                "mbaddr": "30125",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "3",
+                "tname": "f3",
+                "fnCode": "04",
+                "mbaddr": "30205",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "5",
+                "tname": "f5",
+                "fnCode": "04",
+                "mbaddr": "30285",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "6",
+                "tname": "f6",
+                "fnCode": "04",
+                "mbaddr": "30325",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "8",
+                "tname": "f8",
+                "fnCode": "04",
+                "mbaddr": "30405",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "9",
+                "tname": "f9",
+                "fnCode": "04",
+                "mbaddr": "30445",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "10",
+                "tname": "f10",
+                "fnCode": "04",
+                "mbaddr": "30485",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "12",
+                "tname": "kf2",
+                "fnCode": "04",
+                "mbaddr": "38019",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "13",
+                "tname": "kf3",
+                "fnCode": "04",
+                "mbaddr": "38037",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "15",
+                "tname": "kf5",
+                "fnCode": "04",
+                "mbaddr": "38073",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "17",
+                "tname": "kf7",
+                "fnCode": "04",
+                "mbaddr": "38109",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "18",
+                "tname": "kf8",
+                "fnCode": "04",
+                "mbaddr": "38127",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "19",
+                "tname": "kf9",
+                "fnCode": "04",
+                "mbaddr": "38145",
+                "ttype": "UINT32"
+            },
+            {
+                "tid": "20",
+                "tname": "kf10",
+                "fnCode": "04",
+                "mbaddr": "38163",
+                "ttype": "UINT32"
+            }
+        ]
+    },
+
+    {
+        "equipinfo": {
+            "eid": "2",
+            "name": "CS1",
+            "addr": "10.71.66.193",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "f1",
+                "fnCode": "04",
+                "mbaddr": "30125",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "3",
+                "tname": "f3",
+                "fnCode": "04",
+                "mbaddr": "30205",
+                "ttype": "INT32"
+            },
+            {
+                "tid": "20",
+                "tname": "kf10",
+                "fnCode": "04",
+                "mbaddr": "38163",
+                "ttype": "UINT32"
+            }
+        ]
+    }
+]
