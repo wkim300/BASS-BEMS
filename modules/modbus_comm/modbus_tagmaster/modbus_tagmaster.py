@@ -99,7 +99,7 @@ class WindowClass(QMainWindow, form_class) :
 
             uid = self.item_selec.data(1,0)
 
-            if uid.find('-') == -1 : 
+            if uid.find('-') == -1 : # Equip을 선택하고 삭제하면 해당 Equip과 하위 TAG가 모두 삭제됨
                 eid = uid
                 tid = None
 
