@@ -1,7 +1,6 @@
 from umodbus import conf
 from umodbus.client import tcp
 
-import bitstring
 from bitstring import BitArray
 
 import socket
@@ -235,31 +234,30 @@ class WindowClass(QMainWindow, form_class) :
                         ttype = current_tag_dict["ttype"]
                         registerAddr = int(mbaddr) - int(fnList[fncode])
 
+                        regLength = 1 if ttype[-2:]=='16' else 2 # 태그 타입에 따라 modbus register 조회 길이 결정
+                        regType = ttype[:-2]
+                        
+
                         try : 
-                            regLength = 1 if ttype=="UINT16" else 2 # 태그 타입에 따라 modbus register 조회 길이 결정
+                            
                             msg_adu = self.pollFnDict[fncode](1, registerAddr, regLength) # MODBUS message ADU 생성
                             msg_response = tcp.send_message(msg_adu, locals()[socketName2]) # MODBUS ADU 전송, response PDU 저장
 
                             holdingRegistersHex = ["{0:04x}".format(x) for x in msg_response] # "0x0000" 형식으로 각 register의 값을 HEX로 저장
                             print(holdingRegistersHex)
                             holdingRegistersHexJoined = "0x" + (("".join(holdingRegistersHex[:])).replace("0x","")) # 조회한 HEX를 하나의 HEX로 이어붙임
-                            print(holdingRegistersHexJoined)
+                            print("Joined HEX : " + holdingRegistersHexJoined)
+                            print("Reg Type : " + regType)
 
-                            holdingRegisters = int(holdingRegistersHexJoined, 16) # 연결된 Register값(HEX)을 INT로 변환
-                            '''
-                            ####################################################################################
-                            ################## Signed INT와 Float에도 대응할 수 있도록 Joined HEX 값 변환 기능 추가해야함
-                            아마도 BitArray 활용
-                            또는 struct pack/unpack 활용
-                            ####################################################################################
-                            '''
+                            holdingRegisters = int(holdingRegistersHexJoined, 16) if regType == 'UINT' else BitArray(holdingRegistersHexJoined).int
+                            # 연결된 Register값(HEX)을 INT로 변환
                             
                         except Exception : 
                             holdingRegisters = -4111 # 접속 끊긴 기기의 TAG값은 -4111로 임의 지정
                             trySet.add(equipcnt)  # 접속 끊긴 Equipment를 Try set에 추가하여 socket comm. 재시도 목록에 추가
                             
                         holdingRegisters_list.append(holdingRegisters)
-                        print("Tag {0}-{1} Poll".format(equipcnt, tagcnt))
+                        print("Tag {0}-{1} Poll End".format(equipcnt, tagcnt))
                     
                 print(holdingRegisters_list)
                 

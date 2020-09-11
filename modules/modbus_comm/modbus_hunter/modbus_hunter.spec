@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['modbus_hunter.py'],
-             pathex=['C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_hunter'],
+             pathex=['c:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_hunter'],
              binaries=[],
              datas=[],
              hiddenimports=[],
