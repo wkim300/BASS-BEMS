@@ -1,4 +1,4 @@
-('C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_tagmaster\\build\\modbus_tagmaster\\PYZ-00.pyz',
+('c:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_tagmaster\\build\\modbus_tagmaster\\PYZ-00.pyz',
  [('multiprocessing.popen_fork',
    'c:\\users\\ecoda\\appdata\\local\\programs\\python\\python38\\lib\\multiprocessing\\popen_fork.py',
    'PYMODULE'),

@@ -271,6 +271,16 @@
      <string>UINT32</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>INT16</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>INT32</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <tabstops>
