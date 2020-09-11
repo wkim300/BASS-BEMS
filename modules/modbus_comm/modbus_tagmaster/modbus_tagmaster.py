@@ -28,8 +28,6 @@ class WindowClass(QMainWindow, form_class) :
 
         self.input_mbaddr.setInputMask("00000")
 
-        # with open('myjson_new.json','r') as myjsonfile : 
-        #     self.equipdata = json.load(myjsonfile)
         self.equipdata=[]
         self.addrUsed={}
         self.empty_equipdata = [
@@ -51,8 +49,6 @@ class WindowClass(QMainWindow, form_class) :
             ]
             }
         ]
-
-        # self.fnListSet()
 
         twHeader = self.tree1.header()
         twHeader.setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -89,16 +85,12 @@ class WindowClass(QMainWindow, form_class) :
             else : 
                 eid = uid[:uid.find('-')]
                 tid = uid[uid.find('-')+1:]
-
-            # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
             
         except IndexError : 
             pass
 
     def delActionFn(self) : 
-        
-        ### 태그 삭제시 self.addrUsed 업데이트 여기에도 추가
-        ###########################################################################################################
+
         ed = copy.deepcopy(self.equipdata)
 
         try : 
@@ -110,7 +102,22 @@ class WindowClass(QMainWindow, form_class) :
             if uid.find('-') == -1 : 
                 eid = uid
                 tid = None
-            else : 
+
+                for eidcnt in range(0,len(ed)) : 
+                    
+                    current_eid = ed[eidcnt]['equipinfo']['eid']
+                    
+                    if current_eid == eid : 
+                        
+                        del ed[eidcnt]
+                        try : 
+                            del self.addrUsed[current_eid]
+                        except KeyError : 
+                            pass
+                        break
+                        
+            
+            else : # TAG를 선택하고 삭제를 누르면 TAG를 삭제하도록 하는 부분
                 eid = uid[:uid.find('-')]
                 tid = uid[uid.find('-')+1:]
                 
@@ -119,27 +126,22 @@ class WindowClass(QMainWindow, form_class) :
                     current_eid = ed[eidcnt]['equipinfo']['eid']
                     for tidcnt in range(0,len(ed[eidcnt]['tags'])) :
                         
-                        # print("{}-{}".format(eidcnt, tidcnt))
-                        # print("tID : " + ed[eidcnt]['tags'][tidcnt]['tid'])
-
                         current_tid = ed[eidcnt]['tags'][tidcnt]['tid']
+
                         if (current_tid == tid)&(current_eid == eid) : 
                             
                             current_mbaddr = ed[eidcnt]['tags'][tidcnt]['mbaddr']
                             current_ttype = ed[eidcnt]['tags'][tidcnt]['ttype']
                             
-                            mbaddr_list_toDel = [current_mbaddr] if current_ttype == "UINT16" else [current_mbaddr, str(int(current_mbaddr)+1)] # 삭제되는 태그의 modbus address 정리
+                            mbaddr_list_toDel = [current_mbaddr] if current_ttype[-2:] == "16" else [current_mbaddr, str(int(current_mbaddr)+1)] # 삭제되는 태그의 modbus address 정리
                             
                             del ed[eidcnt]['tags'][tidcnt] # equipment data dictionary에서 대상 tag 삭제
                             
                             # used address 리스트에서 삭제대상 modbus address 함께 삭제
                             print(mbaddr_list_toDel)
                             for mbaddr_target in mbaddr_list_toDel : 
-                                
-                                # try : 
-                                self.addrUsed.remove(mbaddr_target)
-                                # except ValueError : 
-                                #     pass
+
+                                self.addrUsed[current_eid].remove(mbaddr_target)
 
                             break
 
@@ -147,9 +149,8 @@ class WindowClass(QMainWindow, form_class) :
             self.equipdata = copy.deepcopy(ed)
             self.fnListSet()
             self.add_tag.setEnabled(False)
-            # print("Equip id : {0} // Tag id : {1}".format(eid, tid))
         
-        except IndexError : 
+        except IndexError : # TreeWidget이 비어있을 때 우클릭 후 삭제 선택했을 때 아무 동작 없게 하기 위해 예외처리함
             pass
 
 
@@ -199,7 +200,6 @@ class WindowClass(QMainWindow, form_class) :
         ed = copy.deepcopy(self.equipdata) # Init에서 불러온 equipdata를 deepcopy(원본 변수 수정 방지)
 
         for equips in range(0,len(ed)) : 
-            # ed = self.equipdata
             eid_list.append(int(ed[equips]["equipinfo"]["eid"])) # Equip ID 추가를 위해 전체 EID 검사 후 리스트화
             print(int(ed[equips]["equipinfo"]["eid"]))
 
@@ -229,16 +229,15 @@ class WindowClass(QMainWindow, form_class) :
         fncode_list = {"4" : "03", "3" : "04", "0" : "01", "1" : "02"}
 
         ### tree widget에서 선택한 item의 parent 잡기
-        if self.parentitem == None : 
-            target_equip = self.item_selec.data(1,0)
-        else : 
-            target_equip = self.parentitem.data(1,0)
+        target_equip = self.item_selec.data(1,0) if self.parentitem == None else self.parentitem.data(1,0)
+
 
         for swji in range(0,len(self.equipdata)) : 
             eid = self.equipdata[swji]["equipinfo"]["eid"]
             
             if int(eid) == int(target_equip) : 
                 target_listIndex = swji
+                target_eid = eid
                 break
         
         new_mbaddr = "{0:05d}".format(int(self.input_mbaddr.text()))
@@ -254,23 +253,29 @@ class WindowClass(QMainWindow, form_class) :
 
         
         ### TAG TYPE에 따라 사용된 modbus address 범위를 집계하고 기존 address와 중복일 경우 추가하지 않도록 하는 부분
-        if new_ttype == "UINT32" : 
+        if new_ttype[-2:] == "32" : 
             added_mbaddr = [new_mbaddr, str(int(new_mbaddr)+1)]
         else: 
             added_mbaddr = [new_mbaddr]
 
         addrDuplicated = []
-        for addrCheck in added_mbaddr : 
+        if target_eid in self.addrUsed.keys() :
             
-            if addrCheck in self.addrUsed : 
-                addrDuplicated.append(addrCheck)
+            for addrCheck in added_mbaddr : 
+                
+                if addrCheck in self.addrUsed[target_eid] : 
+                    addrDuplicated.append(addrCheck)
+            
+            
         
         
         ### 중복이 있으면 알림메세지, 없으면 태그 추가
         if len(addrDuplicated) != 0 : 
         
-            informMsg = "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어\n추가할 수 없습니다.\n\n § 중복된 주소 : {0}".format(addrDuplicated[0])
-            # QMessageBox.information(self,"알림", "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어 추가할 수 없습니다.")
+            informMsg = "추가하려는 MODBUS 주소가 기존 목록의 주소 범위와 중복되어\n추가할 수 없습니다." \
+                + "\n\n § 추가 대상 Equip. ID : {0}".format(target_eid) \
+                + "\n\n § 중복된 주소 : {0}".format(addrDuplicated[0])
+            
             QMessageBox.information(self,"알림", informMsg)
         
         else : 
@@ -279,7 +284,10 @@ class WindowClass(QMainWindow, form_class) :
             self.equipdata[target_listIndex]["tags"].append({"tid":new_tid, "tname":new_tname, "fnCode":new_fncode, "mbaddr":new_mbaddr, "ttype":new_ttype})
             
             ### 사용된 modbus address 집계 리스트에 현재 추가된 address를 추가함
-            self.addrUsed += added_mbaddr
+            if target_eid in self.addrUsed.keys() : 
+                self.addrUsed[target_eid] += added_mbaddr
+            else : 
+                self.addrUsed[target_eid] = added_mbaddr
             
             
             print(self.addrUsed)
@@ -319,29 +327,17 @@ class WindowClass(QMainWindow, form_class) :
 
                     if current_tag["ttype"][-2:] == "16" :
                         addr_used_thisEquip.append(current_tag["mbaddr"])
-                        # self.addrUsed[current_eid].append(current_tag["mbaddr"])
-                        # self.addrUsed[current_eid] = [mbaddr for mbaddr in [current_tag["mbaddr"]]]
+                        
                     else : 
                         addr_used_thisEquip.append(current_tag["mbaddr"])
                         addr_used_thisEquip.append(str(int(current_tag["mbaddr"])+1))
-                        # self.addrUsed[current_eid] = [mbaddr for mbaddr in [current_tag["mbaddr"], str(int(current_tag["mbaddr"])+1)]]
-
+                        
                 self.addrUsed[current_eid] = addr_used_thisEquip
             self.fnListSet()
             print(self.addrUsed)
         
         except : 
             pass
-'''
-
-###############################################
-tag 삭제시 self.addrUsed 딕셔너리에 반영하도록 del Fn 수정 필요
-현재 self.addrUsed => 리스트임
-dict에 반영되도록 수정
-###############################################
-
-'''
-
 
 
 

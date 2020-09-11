@@ -1,3 +1,4 @@
+import PyQt5
 from umodbus import conf
 from umodbus.client import tcp
 
@@ -23,15 +24,6 @@ import copy
 import json
 import csv
 from pprint import pprint as pp
-
-'''
-import bitstring
-from bitstring import BitArray
-
-awef = BitArray('0x0000ffff')
-aaa = awef.uint
-'''
-
 
 
 form_class = uic.loadUiType("modbus_hunter.ui")[0]
