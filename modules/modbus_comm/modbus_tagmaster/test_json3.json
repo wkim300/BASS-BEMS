@@ -1,0 +1,57 @@
+[
+    {
+        "equipinfo": {
+            "eid": "1",
+            "name": "e1",
+            "addr": "127.0.0.1",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "t1",
+                "fnCode": "03",
+                "mbaddr": "40001",
+                "ttype": "UINT16"
+            },
+            {
+                "tid": "2",
+                "tname": "t1",
+                "fnCode": "03",
+                "mbaddr": "40002",
+                "ttype": "UINT16"
+            },
+            {
+                "tid": "3",
+                "tname": "t1",
+                "fnCode": "03",
+                "mbaddr": "40003",
+                "ttype": "UINT32"
+            }
+        ]
+    },
+    {
+        "equipinfo": {
+            "eid": "2",
+            "name": "e2",
+            "addr": "127.0.0.2",
+            "port": "502"
+        },
+        "tags": [
+            {
+                "tid": "1",
+                "tname": "tt1",
+                "fnCode": "04",
+                "mbaddr": "30001",
+                "ttype": "UINT16"
+            },
+            {
+                "tid": "2",
+                "tname": "tt2",
+                "fnCode": "04",
+                "mbaddr": "30002",
+                "ttype": "UINT16"
+            }
+        ]
+    }
+]
