@@ -8,18 +8,18 @@
         },
         "tags": [
             {
-                "tid": "1",
-                "tname": "tag1",
-                "fnCode": "03",
-                "mbaddr": "40001",
-                "ttype": "INT32"
-            },
-            {
                 "tid": "2",
                 "tname": "tag2",
                 "fnCode": "03",
                 "mbaddr": "40003",
                 "ttype": "UINT16"
+            },
+            {
+                "tid": "3",
+                "tname": "tag1",
+                "fnCode": "03",
+                "mbaddr": "40001",
+                "ttype": "UINT32"
             }
         ]
     }
