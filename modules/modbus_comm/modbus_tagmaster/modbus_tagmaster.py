@@ -15,7 +15,9 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import Qt
 
 
-form_class = uic.loadUiType("modbus_tagmaster.ui")[0]
+# form_class = uic.loadUiType("modbus_tagmaster.ui")[0]
+form_class = uic.loadUiType("C:\\Users\\swjgram\\Documents\\pyprojects\\BASS-BEMS\\modules\\modbus_comm\\modbus_tagmaster\\modbus_tagmaster.ui")[0]
+
 
 class WindowClass(QMainWindow, form_class) :
 

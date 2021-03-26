@@ -27,7 +27,7 @@ import csv
 
 
 try : 
-    form_class = uic.loadUiType("C:\\Users\\ECODA\\Desktop\\dhwtest\\pyapitest\\BASS-BEMS\\modules\\modbus_comm\\modbus_test.ui")[0]
+    form_class = uic.loadUiType("C:\\Users\\swjgram\\Documents\\pyprojects\\BASS-BEMS\\modules\\modbus_comm\\modbus_viewer\\modbus_test.ui")[0]
 except : 
     form_class = uic.loadUiType("modules\\modbus_comm\\modbus_viewer\\modbus_test2.py")[0]
 
