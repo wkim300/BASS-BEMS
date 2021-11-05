@@ -4,6 +4,7 @@ from umodbus.client import tcp
 
 from bitstring import BitArray
 
+import os
 import socket
 import time
 import sys
@@ -25,8 +26,11 @@ import json
 import csv
 from pprint import pprint as pp
 
+curpath = os.getcwd()
 
-form_class = uic.loadUiType("modbus_hunter.ui")[0]
+# form_class = uic.loadUiType("modbus_hunter.ui")[0]
+form_class = uic.loadUiType(curpath+'\\modules\\modbus_comm\\modbus_hunter\\'+'modbus_hunter.ui')[0]  # VSCODE 작업중에만 사용(vscode는 working dir 기준으로 cur path가 잡힘..)
+
 
 class WindowClass(QMainWindow, form_class) :
 
