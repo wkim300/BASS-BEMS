@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>서원준건물에너지사무소(swj@swj.kr)</string>
   </property>
   <widget class="QTableWidget" name="modbustable">
    <property name="geometry">
