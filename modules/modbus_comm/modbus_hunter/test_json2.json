@@ -12,28 +12,28 @@
                 "tname": "tag1",
                 "fnCode": "03",
                 "mbaddr": "40001",
-                "ttype": "UINT32"
+                "ttype": "INT32"
             },
             {
                 "tid": "2",
                 "tname": "tag2",
                 "fnCode": "03",
                 "mbaddr": "40003",
-                "ttype": "UINT16"
+                "ttype": "INT16"
             },
             {
                 "tid": "3",
                 "tname": "tag3",
                 "fnCode": "03",
                 "mbaddr": "40004",
-                "ttype": "UINT32"
+                "ttype": "INT32"
             },
             {
                 "tid": "4",
                 "tname": "tag4",
                 "fnCode": "03",
                 "mbaddr": "40006",
-                "ttype": "UINT32"
+                "ttype": "INT32"
             },
             {
                 "tid": "5",

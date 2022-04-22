@@ -17,6 +17,8 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QMainWindow, QAction, qApp
 from PyQt5.QtCore import QThread
 
+from Ui_modbus_hunter import Ui_Dialog as swjUI
+
 import time
 import datetime
 from datetime import timedelta
@@ -29,7 +31,9 @@ from pprint import pprint as pp
 curpath = os.getcwd()
 
 # form_class = uic.loadUiType("modbus_hunter.ui")[0]
-form_class = uic.loadUiType(curpath+'\\modules\\modbus_comm\\modbus_hunter\\'+'modbus_hunter.ui')[0]  # VSCODE 작업중에만 사용(vscode는 working dir 기준으로 cur path가 잡힘..)
+form_class = swjUI
+
+# form_class = uic.loadUiType(curpath+'\\modules\\modbus_comm\\modbus_hunter\\'+'modbus_hunter.ui')[0]  # VSCODE 작업중에만 사용(vscode는 working dir 기준으로 cur path가 잡힘..)
 
 
 class WindowClass(QMainWindow, form_class) :
@@ -224,6 +228,7 @@ class WindowClass(QMainWindow, form_class) :
                     tagsize = len(ed[equipcnt]["tags"])
                     
                     for tagcnt in range(0,tagsize) : 
+                        print("\n\n--------------------")
                         current_tag_dict = ed[equipcnt]["tags"][tagcnt]
                         fncode = current_tag_dict["fnCode"]
                         mbaddr = current_tag_dict["mbaddr"]
