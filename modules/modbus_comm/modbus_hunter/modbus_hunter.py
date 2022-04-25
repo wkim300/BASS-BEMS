@@ -4,7 +4,7 @@ from umodbus.client import tcp
 
 from bitstring import BitArray
 
-import os
+# import os
 import socket
 import time
 import sys
@@ -28,7 +28,7 @@ import json
 import csv
 from pprint import pprint as pp
 
-curpath = os.getcwd()
+# curpath = os.getcwd()
 
 # form_class = uic.loadUiType("modbus_hunter.ui")[0]
 
