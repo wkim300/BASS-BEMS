@@ -168,7 +168,7 @@ class WindowClass(QMainWindow, form_class) :
             
             except (ConnectionRefusedError, TimeoutError, socket.timeout) :
                 
-                locals()[socketName].close() # 접속불가 대상 소켓은 일단 close하여 winsock 점유 포트를 반납하여 낭비를 방지함
+                locals()[socketName].close() # 접속불가 대상 소켓은 일단 close하고 winsock 점유 포트를 반납하여 낭비를 방지함
                 self.statuslabel.setText('Equip {0} is dead.'.format(ed[equipcnt]["equipinfo"]["name"]))
         
         ### Polling Loop Start
