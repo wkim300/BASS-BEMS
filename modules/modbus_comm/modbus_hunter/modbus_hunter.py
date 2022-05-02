@@ -251,7 +251,7 @@ class WindowClass(QMainWindow, form_class) :
                             print("Joined HEX : " + holdingRegistersHexJoined)
                             print("Reg Type : " + regType)
 
-                            holdingRegisters = int(holdingRegistersHexJoined, 16) if regType == 'UINT' else BitArray(holdingRegistersHexJoined).int
+                            holdingRegisters = int(holdingRegistersHexJoined, 16) if regType == 'INT' else BitArray(holdingRegistersHexJoined).int
                             # 연결된 Register값(HEX)을 INT로 변환
                             
                         except Exception : 
